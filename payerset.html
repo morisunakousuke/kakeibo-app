@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>支払者メンテナンス</title>
+</head>
+
+<style>
+  .form {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 8px 12px;
+    max-width: 400px;
+    margin-bottom: 20px;
+  }
+  .form label { text-align: right; }
+  table { border-collapse: collapse; width: 400px; margin-top: 20px; }
+  th, td { border: 1px solid #ccc; padding: 6px 12px; text-align: left; }
+  th.checkbox, td.checkbox { text-align: center; width: 40px; }
+  
+  input.small {
+    width: 50px; /* 幅を狭める */
+  }
+</style>
+
+<body>
+  <h1>支払者メンテナンス</h1>
+  
+  <form id="payerForm" class="form">
+    <label for="payerid">支払者ID</label>
+    <input id="payerid" type="text" name="payerid" readonly class="small">
+
+    <label for="payername">支払者名</label>
+    <input type="text" id="payername">
+
+    <button type="submit">登録</button>
+  </form>
+
+  <p id="message"></p>
+
+  <h2>支払者一覧</h2>
+  <button id="deleteBtn">選択行を削除</button>
+  <table id="payerTable">
+    <thead>
+      <tr>
+        <th class="checkbox">選択</th>
+        <th>ID</th>
+        <th>支払者名</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js'
+
+    const supabaseUrl = 'https://gyogtttxgenbgpryclcr.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5b2d0dHR4Z2VuYmdwcnljbGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5NDYxMDEsImV4cCI6MjA3NjUyMjEwMX0.MUemu4Y1Qu4Zm0aN29dwNoLg2n51VorJvxTeaf62Pvw'
+    const supabase = createClient(supabaseUrl, supabaseKey)
+    
+    const form = document.getElementById('payerForm')
+    const message = document.getElementById('message')
+    const tableBody = document.querySelector('#payerTable tbody')
+    const deleteBtn = document.getElementById('deleteBtn')
+
+    // 支払者ID初期表示
+    async function loadNextId() {
+      const { count, error } = await supabase
+        .from('payer')
+        .select('payerid', { count: 'exact', head: true });
+
+      if (error) {
+        console.error(error)
+        message.textContent = 'エラーが発生しました: ' + error.message
+        return;
+      } 
+      
+      const nextId = count + 1;
+      document.getElementById('payerid').value = String(nextId).padStart(2, '0');
+    }
+
+    // 支払者一覧表示
+    async function loadTable() {
+      const { data, error } = await supabase
+        .from('payer')
+        .select('*')
+        .order('payerid', { ascending: true });
+
+      if (error) {
+        console.error(error)
+        message.textContent = 'テーブル読み込みエラー: ' + error.message
+        return;
+      }
+
+      tableBody.innerHTML = '';
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+
+        // チェックボックス
+        const tdCheck = document.createElement('td');
+        tdCheck.className = 'checkbox';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = row.payerid; // 削除用
+        tdCheck.appendChild(checkbox);
+
+        // ID
+        const tdId = document.createElement('td');
+        tdId.textContent = String(row.payerid).padStart(2, '0');
+
+        // 支払者名
+        const tdName = document.createElement('td');
+        tdName.textContent = row.payername;
+
+        tr.appendChild(tdCheck);
+        tr.appendChild(tdId);
+        tr.appendChild(tdName);
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // ページ初期表示
+    async function init() {
+      await loadNextId();
+      await loadTable();
+    }
+
+    init();
+
+    // フォーム送信
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payerid = document.getElementById('payerid').value;
+      const payername = document.getElementById('payername').value.trim();
+
+      if (!payername) return;
+
+      const { data, error } = await supabase
+        .from('payer')
+        .insert([{ payerid: payerid,payername: payername }]);
+
+      if (error) {
+        console.error(error)
+        message.textContent = '追加エラー: ' + error.message
+      } else {
+        message.textContent = '追加しました！';
+        document.getElementById('payername').value = '';
+        await loadNextId();
+        await loadTable();
+      }
+    });
+
+    // 選択行削除
+    deleteBtn.addEventListener('click', async () => {
+      const checkboxes = tableBody.querySelectorAll('input[type="checkbox"]:checked');
+      if (checkboxes.length === 0) return;
+
+      const idsToDelete = Array.from(checkboxes).map(cb => cb.value);
+
+      const { error } = await supabase
+        .from('payer')
+        .delete()
+        .in('payerid', idsToDelete);
+
+      if (error) {
+        console.error(error)
+        message.textContent = '削除エラー: ' + error.message
+      } else {
+        message.textContent = '削除しました！';
+        await loadNextId();
+        await loadTable();
+      }
+    });
+  </script>
+</body>
+</html>
