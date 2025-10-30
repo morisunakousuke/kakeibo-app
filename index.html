@@ -4,12 +4,11 @@
   <title>家計簿</title>
   <script>
   // スマホ判定（幅600px未満ならmobile.htmlへ）
-  document.addEventListener('DOMContentLoaded', function() {
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 600;
-    if (isMobile) {
-      window.location.replace("./mobile.html");
-    }
-  });
+  const ua = navigator.userAgent.toLowerCase();
+  const isMobile = /iphone|ipod|ipad|android/.test(ua) || window.innerWidth < 600;
+  if (isMobile) {
+    window.location.href = "./mobile.html?v=" + Date.now(); // キャッシュ無効化
+  }
   </script>
   <style>
 body {
