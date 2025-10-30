@@ -375,6 +375,15 @@ h3, h4 {
 
 
   </style>
+
+<script>
+  // スマホ判定（幅600px未満ならmobile.htmlへ）
+  if (window.innerWidth < 600) {
+    window.location.href = "mobile.html";
+  }
+</script>
+  
+  
 </head>
 
 <body>
@@ -522,9 +531,6 @@ h3, h4 {
 </div>
 
   <script type="module">
-  if (window.innerWidth < 600) {
-  window.location.href = "mobile.html";
-  }
     import { createClient } from 'https://esm.sh/@supabase/supabase-js'
 
     const supabaseUrl = 'https://gyogtttxgenbgpryclcr.supabase.co'
