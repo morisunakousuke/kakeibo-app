@@ -11,14 +11,11 @@
       padding: 12px;
       background-color: #f9f9f9;
     }
-
-    h1 {
+    h1, h2, h3 {
       text-align: center;
-      font-size: 20px;
-      margin-bottom: 10px;
       color: #333;
+      margin: 10px 0;
     }
-
     form {
       display: flex;
       flex-direction: column;
@@ -28,104 +25,354 @@
       border-radius: 10px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
     label {
       font-weight: bold;
       font-size: 14px;
     }
-
-    input, select, textarea, button {
+    input, select, textarea {
       width: 100%;
+      box-sizing: border-box;
       padding: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 16px;
+      background-color: #fff;
     }
-
-    button {
+    button[type="submit"] {
+      width: 100%;
+      border-radius: 6px;
       background-color: #4caf50;
       color: #fff;
-      border: none;
       font-size: 16px;
+      padding: 10px;
+      border: none;
       cursor: pointer;
+      transition: 0.2s;
     }
-
-    button:hover {
+    button[type="submit"]:hover {
       background-color: #45a049;
     }
-
+    .cost-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 15px;
+    }
+    .cost-toggle button {
+      flex: 1;
+      max-width: 140px;
+      padding: 10px 0;
+      border: 2px solid #4caf50;
+      border-radius: 8px;
+      background-color: #fff;
+      color: #4caf50;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .cost-toggle button.active {
+      background-color: #4caf50;
+      color: #fff;
+      box-shadow: 0 0 6px rgba(0, 128, 0, 0.4);
+    }
+    .month-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .month-control button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .month-control button:hover {
+      background-color: #45a049;
+    }
+    .amount-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 13px;
+      background-color: #fff;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+    }
+    th { background-color: #f0f0f0; }
+    .table-scroll {
+      overflow-x: auto;
+      border-radius: 8px;
+      margin-top: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .action-buttons button {
+      flex: 1;
+      max-width: 180px;
+      padding: 10px;
+      background-color: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .action-buttons button:nth-child(2) {
+      background-color: #e53935;
+    }
     #message {
       text-align: center;
       color: red;
       font-weight: bold;
       margin-top: 10px;
     }
-
-    footer {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 13px;
-      color: #666;
-    }
   </style>
 </head>
-
 <body>
-  <h1>家計簿入力（スマホ）</h1>
+  <h1>家計簿入力</h1>
 
   <form id="mobileForm">
+    <div class="cost-toggle">
+      <button type="button" class="active" data-type="variable">変動費</button>
+      <button type="button" data-type="fixed">固定費</button>
+    </div>
+
     <label>日付</label>
-    <input type="date" id="dateInput">
+    <input type="date" id="datepicker">
 
     <label>カテゴリ</label>
     <select id="categorySelect"><option>読み込み中...</option></select>
+
+    <label>テキスト</label>
+    <textarea id="noteInput" rows="2" placeholder="備考など"></textarea>
 
     <label>支払者</label>
     <select id="payerSelect"><option>読み込み中...</option></select>
 
     <label>金額</label>
-    <input type="number" id="amountInput" placeholder="例: 5000">
+    <div class="amount-grid">
+      <div><label>収入</label><input type="number" id="incomeInput"></div>
+      <div><label>食費</label><input type="number" id="mealInput"></div>
+      <div><label>生活用品</label><input type="number" id="suppliesInput"></div>
+      <div><label>娯楽</label><input type="number" id="playInput"></div>
+      <div><label>生活費</label><input type="number" id="infraInput"></div>
+      <div><label>教育</label><input type="number" id="educationInput"></div>
+      <div><label>その他</label><input type="number" id="othersInput"></div>
+    </div>
 
-    <label>メモ</label>
-    <textarea id="noteInput" rows="2" placeholder="備考など"></textarea>
-
-    <button type="submit">登録</button>
+    <button type="submit">登録 / 更新</button>
   </form>
+
+  <h2>家計簿内容</h2>
+  <div class="month-control">
+    <button id="prevMonth">◀ 前月</button>
+    <input type="month" id="datemonth">
+    <button id="nextMonth">翌月 ▶</button>
+  </div>
+
+  <div class="table-scroll">
+    <h3>固定費</h3>
+    <table id="fixedTable">
+      <thead>
+        <tr>
+          <th>選択</th>
+          <th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
+          <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
+          <th>生活費</th><th>教育</th><th>その他</th><th>合計</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="table-scroll">
+    <h3>変動費</h3>
+    <table id="variableTable">
+      <thead>
+        <tr>
+          <th>選択</th>
+          <th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
+          <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
+          <th>生活費</th><th>教育</th><th>その他</th><th>合計</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="action-buttons">
+    <button id="editSelected">選択行を編集 ✏️</button>
+    <button id="deleteSelected">選択行を削除 🗑️</button>
+  </div>
 
   <p id="message"></p>
 
-  <footer>© 家計簿アプリ Mobile</footer>
-
   <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js'
+    import {
+      loadCategories, loadPayers, loadBurdenTable, loadTotalTable, loadKakeiTable,
+      insertKakei, updateKakei, deleteKakei, getNextSeq, changeMonth,
+      formatNum, calcTotal, setToday, renderKakeiList
+    } from './common.js';
 
-    const supabaseUrl = 'https://gyogtttxgenbgpryclcr.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5b2d0dHR4Z2VuYmdwcnljbGNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5NDYxMDEsImV4cCI6MjA3NjUyMjEwMX0.MUemu4Y1Qu4Zm0aN29dwNoLg2n51VorJvxTeaf62Pvw';
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const form = document.getElementById('mobileForm');
     const msg = document.getElementById('message');
+    const monthInput = document.getElementById('datemonth');
     const categorySelect = document.getElementById('categorySelect');
     const payerSelect = document.getElementById('payerSelect');
+    const toggleButtons = document.querySelectorAll('.cost-toggle button');
+    let currentType = 'variable';
 
-    // カテゴリ読み込み
-    async function loadCategories() {
-      const { data, error } = await supabase.from('category').select('categoryid, categoryname').order('categoryid');
-      if (error) {
-        msg.textContent = 'カテゴリ読み込み失敗';
-        return;
-      }
+    // ▼ コストタイプ切替
+    toggleButtons.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        toggleButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentType = btn.dataset.type;
+        await renderCategories();
+      });
+    });
+
+    // ▼ カテゴリ・支払者読込
+    async function renderCategories() {
+      const cats = await loadCategories(currentType === 'fixed');
       categorySelect.innerHTML = '<option value="">選択してください</option>';
-      data.forEach(cat => {
+      cats.forEach(c => {
         const opt = document.createElement('option');
-        opt.value = cat.categoryid;
-        opt.textContent = cat.categoryname;
+        opt.value = c.categoryid;
+        opt.textContent = c.categoryname;
         categorySelect.appendChild(opt);
       });
     }
+    async function renderPayers() {
+      const data = await loadPayers();
+      payerSelect.innerHTML = '<option value="">選択してください</option>';
+      data.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.payerid;
+        opt.textContent = p.payername;
+        payerSelect.appendChild(opt);
+      });
+    }
 
-    // 支払者読み込み
-    async function loadPayers() {
-      const { data, error } = await supabase.from('payer').select('payerid, payername').order('payerid');
-      if (error) {
-        msg.textContent = '
+    // ▼ 家計簿一覧
+    async function refreshTables() {
+      const month = monthInput.value;
+      const varData = await loadKakeiTable(false, month);
+      const fixData = await loadKakeiTable(true, month);
+      renderKakeiList('#fixedTable tbody', fixData, formatNum);
+      renderKakeiList('#variableTable tbody', varData, formatNum);
+    }
+
+    // ▼ 登録・更新
+    document.getElementById('mobileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const row = {
+        date: document.getElementById('datepicker').value,
+        categoryid: categorySelect.value,
+        payerid: payerSelect.value,
+        content: document.getElementById('noteInput').value,
+        income: +document.getElementById('incomeInput').value || 0,
+        meal: +document.getElementById('mealInput').value || 0,
+        supplies: +document.getElementById('suppliesInput').value || 0,
+        play: +document.getElementById('playInput').value || 0,
+        infra: +document.getElementById('infraInput').value || 0,
+        education: +document.getElementById('educationInput').value || 0,
+        others: +document.getElementById('othersInput').value || 0,
+        fixedcostflg: currentType === 'fixed' ? 2 : 1,
+      };
+      row.total = calcTotal(row);
+
+      if (window.editTarget) {
+        await updateKakei(window.editTarget.date, window.editTarget.seq, row);
+        msg.textContent = '更新しました';
+        window.editTarget = null;
+      } else {
+        row.seq = await getNextSeq(row.date);
+        await insertKakei(row);
+        msg.textContent = '登録しました';
+      }
+
+      e.target.reset();
+      await refreshTables();
+    });
+
+    // ▼ 選択行取得
+    function getSelectedRows() {
+      return Array.from(document.querySelectorAll('.row-check:checked')).map(chk => ({
+        date: chk.dataset.date,
+        seq: Number(chk.dataset.seq)
+      }));
+    }
+
+    // ▼ 編集・削除操作
+    document.getElementById('editSelected').addEventListener('click', async () => {
+      const selected = getSelectedRows();
+      if (selected.length !== 1) return alert('編集は1行のみ選択してください');
+      const { date, seq } = selected[0];
+      const all = await loadKakeiTable(false, monthInput.value);
+      const fix = await loadKakeiTable(true, monthInput.value);
+      const target = [...all, ...fix].find(r => r.date === date && r.seq === seq);
+      if (!target) return;
+      document.getElementById('datepicker').value = target.date;
+      categorySelect.value = target.categoryid;
+      payerSelect.value = target.payerid;
+      document.getElementById('noteInput').value = target.content;
+      document.getElementById('incomeInput').value = target.income;
+      document.getElementById('mealInput').value = target.meal;
+      document.getElementById('suppliesInput').value = target.supplies;
+      document.getElementById('playInput').value = target.play;
+      document.getElementById('infraInput').value = target.infra;
+      document.getElementById('educationInput').value = target.education;
+      document.getElementById('othersInput').value = target.others;
+      msg.textContent = `編集中：${target.date} (No.${target.seq})`;
+      window.editTarget = { date, seq };
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.getElementById('deleteSelected').addEventListener('click', async () => {
+      const selected = getSelectedRows();
+      if (!selected.length) return alert('削除する行を選択してください');
+      if (!confirm(`${selected.length} 件を削除しますか？`)) return;
+      for (const row of selected) await deleteKakei(row.date, row.seq);
+      msg.textContent = `${selected.length} 件削除しました`;
+      await refreshTables();
+    });
+
+    // ▼ 月切替
+    document.getElementById('prevMonth').addEventListener('click', () => {
+      monthInput.value = changeMonth(monthInput.value, -1);
+      refreshTables();
+    });
+    document.getElementById('nextMonth').addEventListener('click', () => {
+      monthInput.value = changeMonth(monthInput.value, 1);
+      refreshTables();
+    });
+
+    // ▼ 初期化
+    window.addEventListener('DOMContentLoaded', async () => {
+      setToday('#datepicker', '#datemonth');
+      await renderCategories();
+      await renderPayers();
+      await refreshTables();
+    });
+  </script>
+</body>
+</html>
