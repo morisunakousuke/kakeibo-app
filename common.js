@@ -215,10 +215,11 @@ export function renderKakeiList(selector, data, formatNum) {
   if (!data) return;
 
   data.forEach(r => {
+    const dateStr = r.date ? r.date.slice(5).replace('-', '/') : '';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><input type="checkbox" class="row-check" data-date="${r.date}" data-seq="${r.seq}"></td>
-      <td>${r.date}</td>
+      <td>${dateStr}</td>
       <td>${r.categoryname || ''}</td>
       <td>${r.content || ''}</td>
       <td>${r.payername || ''}</td>
