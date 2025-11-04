@@ -73,6 +73,47 @@ export async function loadKakeiTable(isFixed = false, month = null) {
   return data
 }
 
+/** 編集ボタン押下時の入力欄反映処理 */
+export async function editRow(selectedRow) {
+  const { date, seq } = selectedRow;
+
+  // 月の入力要素を直接取得
+  const monthInput = document.getElementById('datemonth');
+
+  // 固定費・変動費両方から検索
+  const all = await loadKakeiTable(false, monthInput.value);
+  const fix = await loadKakeiTable(true, monthInput.value);
+  const target = [...all, ...fix].find(r => r.date === date && r.seq === seq);
+
+  if (!target) {
+    alert('編集対象のデータが見つかりません');
+    return;
+  }
+
+  // 入力欄を直接DOMから取得して反映
+  document.getElementById('datepicker').value = target.date;
+  document.getElementById('categorySelect').value = target.categoryid || '';
+  document.getElementById('payerSelect').value = target.payerid || '';
+  document.getElementById('noteInput').value = target.content || '';
+  document.getElementById('incomeInput').value = target.income || '';
+  document.getElementById('mealInput').value = target.meal || '';
+  document.getElementById('suppliesInput').value = target.supplies || '';
+  document.getElementById('playInput').value = target.play || '';
+  document.getElementById('infraInput').value = target.infra || '';
+  document.getElementById('educationInput').value = target.education || '';
+  document.getElementById('othersInput').value = target.others || '';
+
+  // メッセージと編集フラグ
+  const msg = document.getElementById('message');
+  msg.textContent = `編集中：${target.date} (No.${target.seq})`;
+  window.editTarget = { date, seq };
+
+  // ページ上部にスクロール
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+
 /** 家計簿データの登録 */
 export async function insertKakei(row) {
   const { error } = await supabase.from('kakei').insert([row])
@@ -178,9 +219,9 @@ export function renderKakeiList(selector, data, formatNum) {
     tr.innerHTML = `
       <td><input type="checkbox" class="row-check" data-date="${r.date}" data-seq="${r.seq}"></td>
       <td>${r.date}</td>
-      <td>${r.categoryname}</td>
+      <td>${r.categoryname || ''}</td>
       <td>${r.content || ''}</td>
-      <td>${r.payername}</td>
+      <td>${r.payername || ''}</td>
       <td>${formatNum(r.income)}</td>
       <td>${formatNum(r.meal)}</td>
       <td>${formatNum(r.supplies)}</td>
@@ -188,8 +229,82 @@ export function renderKakeiList(selector, data, formatNum) {
       <td>${formatNum(r.infra)}</td>
       <td>${formatNum(r.education)}</td>
       <td>${formatNum(r.others)}</td>
-      <td>${formatNum(r.total)}</td>
     `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ==============================
+// 🔸 個人負担表描画
+// ==============================
+export function renderBurdenTable(data) {
+  const tbody = document.querySelector('#burdenTable tbody');
+  tbody.innerHTML = '';
+  if (!data) return;
+
+  data.forEach(async (r) => {
+    const tr = document.createElement('tr');
+    if (r.settled) tr.classList.add('settled-row'); // グレーアウト
+
+    const tdPayer = document.createElement('td');
+    tdPayer.textContent = r.payername;
+
+    const tdAmount = document.createElement('td');
+    tdAmount.textContent = r.total_sum ? r.total_sum.toLocaleString('ja-JP') : '';
+
+    const tdCheck = document.createElement('td');
+    const chk = document.createElement('input');
+    chk.type = 'checkbox';
+    chk.checked = r.settled || false;
+
+    // ▼ チェック操作時のイベント
+    chk.addEventListener('change', async () => {
+      const checked = chk.checked;
+      tr.classList.toggle('settled-row', checked);
+
+      // DBに反映
+      const { error } = await supabase
+        .from('monthly_settled')
+        .update({ settled: checked })
+        .eq('payerid', r.payerid)
+        .eq('year_month', r.year_month);
+
+      if (error) console.error('更新エラー:', error);
+    });
+
+    tdCheck.appendChild(chk);
+    tr.append(tdPayer, tdAmount, tdCheck);
+    tbody.appendChild(tr);
+  });
+}
+
+// ==============================
+// 🔸 合計表描画
+// ==============================
+export function renderTotalTable(data) {
+  const tbody = document.querySelector('#totalTable tbody');
+  tbody.innerHTML = '';
+  if (!data) return;
+
+  data.forEach(r => {
+    const tr = document.createElement('tr');
+    const cols = [
+      r.income_total,
+      r.meal_total,
+      r.supplies_total,
+      r.play_total,
+      r.infra_total,
+      r.education_total,
+      r.others_total,
+      r.expenditure
+    ];
+
+    cols.forEach((val, i) => {
+      const td = document.createElement('td');
+      td.textContent = (val ?? 0).toLocaleString('ja-JP'); // ← null/undefinedを0に
+      if (i === 7 && val < 0) td.style.color = 'red'; // マイナス収支は赤文字
+      tr.appendChild(td);
+    });
     tbody.appendChild(tr);
   });
 }

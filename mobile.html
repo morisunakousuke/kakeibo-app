@@ -92,6 +92,7 @@
       font-size: 14px;
       cursor: pointer;
       transition: 0.2s;
+      white-space: nowrap; 
     }
     .month-control button:hover {
       background-color: #45a049;
@@ -145,6 +146,44 @@
       font-weight: bold;
       margin-top: 10px;
     }
+    
+    .settled-row {
+     background-color: #e0e0e0; /* グレー */
+     color: #666;
+    }
+    
+.title-with-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.title-with-buttons h3 {
+  margin: 0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.action-buttons button {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.action-buttons button:nth-child(2) {
+  background-color: #e53935;
+}
+    
   </style>
 </head>
 <body>
@@ -180,6 +219,7 @@
     </div>
 
     <button type="submit">登録 / 更新</button>
+    <p id="message"></p>
   </form>
 
   <h2>家計簿内容</h2>
@@ -189,48 +229,97 @@
     <button id="nextMonth">翌月 ▶</button>
   </div>
 
+  <!-- ▼ 個人負担表＆合計表 -->
   <div class="table-scroll">
+    <div style="display:flex; flex-direction:column; gap:20px;">
+
+      <div>
+        <h3>個人負担表</h3>
+        <table id="burdenTable">
+          <thead>
+            <tr>
+              <th>支払者</th>
+              <th>金額</th>
+              <th>精算済</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div>
+        <h3>合計表</h3>
+        <table id="totalTable">
+          <thead>
+            <tr>
+              <th>収入合計</th>
+              <th>食事関係</th>
+              <th>雑貨・生活用品系</th>
+              <th>遊び・娯楽関係</th>
+              <th>生活費関係</th>
+              <th>子供・教育</th>
+              <th>その他</th>
+              <th>収支</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+<div class="table-scroll">
+  <div class="title-with-buttons">
+    <div class="action-buttons">
+      <button id="editFixed">選択行を編集 ✏️</button>
+      <button id="deleteFixed">選択行を削除 🗑️</button>
+    </div>
     <h3>固定費</h3>
-    <table id="fixedTable">
-      <thead>
-        <tr>
-          <th>選択</th>
-          <th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
-          <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
-          <th>生活費</th><th>教育</th><th>その他</th><th>合計</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
   </div>
 
-  <div class="table-scroll">
+  <table id="fixedTable">
+    <thead>
+      <tr>
+        <th>選択</th>
+        <th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
+        <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
+        <th>生活費</th><th>教育</th><th>その他</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div class="table-scroll">
+  <div class="title-with-buttons">
+    <div class="action-buttons">
+      <button id="editVariable">選択行を編集 ✏️</button>
+      <button id="deleteVariable">選択行を削除 🗑️</button>
+    </div>
     <h3>変動費</h3>
-    <table id="variableTable">
-      <thead>
-        <tr>
-          <th>選択</th>
-          <th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
-          <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
-          <th>生活費</th><th>教育</th><th>その他</th><th>合計</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
   </div>
 
-  <div class="action-buttons">
-    <button id="editSelected">選択行を編集 ✏️</button>
-    <button id="deleteSelected">選択行を削除 🗑️</button>
-  </div>
+  <table id="variableTable">
+    <thead>
+      <tr>
+        <th>選択</th>
+        <th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
+        <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
+        <th>生活費</th><th>教育</th><th>その他</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-  <p id="message"></p>
+
 
   <script type="module">
     import {
-      loadCategories, loadPayers, loadBurdenTable, loadTotalTable, loadKakeiTable,
+      loadCategories, loadPayers, loadBurdenTable, loadTotalTable, loadKakeiTable,editRow,
       insertKakei, updateKakei, deleteKakei, getNextSeq, changeMonth,
-      formatNum, calcTotal, setToday, renderKakeiList
+      formatNum, calcTotal, setToday, renderKakeiList,renderBurdenTable,renderTotalTable
     } from './common.js';
 
     const msg = document.getElementById('message');
@@ -281,38 +370,100 @@
       renderKakeiList('#variableTable tbody', varData, formatNum);
     }
 
+   //  ▼ 個人負担表
+   async function refreshBurdenTable() {
+      const burden = await loadBurdenTable(monthInput.value);
+      renderBurdenTable(burden);
+   }
+
+   //  ▼ 合計表
+   async function refreshTotalTable() {
+      const total = await loadTotalTable(monthInput.value);
+      renderTotalTable(total);
+   }
+
+
     // ▼ 登録・更新
-    document.getElementById('mobileForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const row = {
-        date: document.getElementById('datepicker').value,
-        categoryid: categorySelect.value,
-        payerid: payerSelect.value,
-        content: document.getElementById('noteInput').value,
-        income: +document.getElementById('incomeInput').value || 0,
-        meal: +document.getElementById('mealInput').value || 0,
-        supplies: +document.getElementById('suppliesInput').value || 0,
-        play: +document.getElementById('playInput').value || 0,
-        infra: +document.getElementById('infraInput').value || 0,
-        education: +document.getElementById('educationInput').value || 0,
-        others: +document.getElementById('othersInput').value || 0,
-        fixedcostflg: currentType === 'fixed' ? 2 : 1,
-      };
-      row.total = calcTotal(row);
+   document.getElementById('mobileForm').addEventListener('submit', async (e) => {
+     e.preventDefault();
+     msg.textContent = ''; // メッセージ初期化
 
-      if (window.editTarget) {
-        await updateKakei(window.editTarget.date, window.editTarget.seq, row);
-        msg.textContent = '更新しました';
-        window.editTarget = null;
-      } else {
-        row.seq = await getNextSeq(row.date);
-        await insertKakei(row);
-        msg.textContent = '登録しました';
-      }
+     try {
+       // ▼ 入力値取得
+       const dateVal = document.getElementById('datepicker').value;
+       const categoryVal = categorySelect.value;
+       const noteVal = document.getElementById('noteInput').value.trim();
 
-      e.target.reset();
-      await refreshTables();
-    });
+       const income = +document.getElementById('incomeInput').value || 0;
+       const meal = +document.getElementById('mealInput').value || 0;
+       const supplies = +document.getElementById('suppliesInput').value || 0;
+       const play = +document.getElementById('playInput').value || 0;
+       const infra = +document.getElementById('infraInput').value || 0;
+       const education = +document.getElementById('educationInput').value || 0;
+       const others = +document.getElementById('othersInput').value || 0;
+
+       // ▼ バリデーションチェック
+       if (!dateVal) {
+         msg.textContent = '日付を入力してください。';
+         return;
+       }
+
+       if (!categoryVal && !noteVal) {
+         msg.textContent = 'カテゴリまたはテキストを入力してください。';
+         return;
+       }
+
+       if (
+         income === 0 &&
+         meal === 0 &&
+         supplies === 0 &&
+         play === 0 &&
+         infra === 0 &&
+         education === 0 &&
+         others === 0
+       ) {
+         msg.textContent = '金額を1つ以上入力してください。';
+         return;
+       }
+
+       // ▼ 登録データ作成
+       const row = {
+         date: dateVal,
+         categoryid: categoryVal,
+         payerid: payerSelect.value,
+         content: noteVal,
+         income,
+         meal,
+         supplies,
+         play,
+         infra,
+         education,
+         others,
+         fixedcostflg: currentType === 'fixed' ? 2 : 1,
+       };
+
+       // 合計計算（DBには送らない）
+       const totalValue = calcTotal(row);
+       row.seq = await getNextSeq(row.date);
+       const { total, ...insertRow } = row;
+
+       if (window.editTarget) {
+         await updateKakei(window.editTarget.date, window.editTarget.seq, insertRow);
+         msg.textContent = '更新しました。';
+         window.editTarget = null;
+       } else {
+         await insertKakei(insertRow);
+         msg.textContent = '登録しました。';
+       }
+
+       e.target.reset();
+       await refreshAllTables();
+
+     } catch (err) {
+       console.error('登録エラー:', err);
+       msg.textContent = 'エラー: ' + err.message;
+     }
+   });
 
     // ▼ 選択行取得
     function getSelectedRows() {
@@ -322,48 +473,48 @@
       }));
     }
 
-    // ▼ 編集・削除操作
-    document.getElementById('editSelected').addEventListener('click', async () => {
-      const selected = getSelectedRows();
-      if (selected.length !== 1) return alert('編集は1行のみ選択してください');
-      const { date, seq } = selected[0];
-      const all = await loadKakeiTable(false, monthInput.value);
-      const fix = await loadKakeiTable(true, monthInput.value);
-      const target = [...all, ...fix].find(r => r.date === date && r.seq === seq);
-      if (!target) return;
-      document.getElementById('datepicker').value = target.date;
-      categorySelect.value = target.categoryid;
-      payerSelect.value = target.payerid;
-      document.getElementById('noteInput').value = target.content;
-      document.getElementById('incomeInput').value = target.income;
-      document.getElementById('mealInput').value = target.meal;
-      document.getElementById('suppliesInput').value = target.supplies;
-      document.getElementById('playInput').value = target.play;
-      document.getElementById('infraInput').value = target.infra;
-      document.getElementById('educationInput').value = target.education;
-      document.getElementById('othersInput').value = target.others;
-      msg.textContent = `編集中：${target.date} (No.${target.seq})`;
-      window.editTarget = { date, seq };
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+// ▼ 固定費の編集
+document.getElementById('editFixed').addEventListener('click', async () => {
+  const selected = getSelectedRows('#fixedTable');
+  if (selected.length !== 1) return alert('固定費の編集は1行のみ選択してください');
+  await editRow(selected[0]);
+});
 
-    document.getElementById('deleteSelected').addEventListener('click', async () => {
-      const selected = getSelectedRows();
-      if (!selected.length) return alert('削除する行を選択してください');
-      if (!confirm(`${selected.length} 件を削除しますか？`)) return;
-      for (const row of selected) await deleteKakei(row.date, row.seq);
-      msg.textContent = `${selected.length} 件削除しました`;
-      await refreshTables();
-    });
+// ▼ 固定費の削除
+document.getElementById('deleteFixed').addEventListener('click', async () => {
+  const selected = getSelectedRows('#fixedTable');
+  if (!selected.length) return alert('削除する固定費を選択してください');
+  if (!confirm(`${selected.length} 件を削除しますか？`)) return;
+  for (const row of selected) await deleteKakei(row.date, row.seq);
+  msg.textContent = `${selected.length} 件削除しました（固定費）`;
+  await refreshAllTables();
+});
+
+// ▼ 変動費の編集
+document.getElementById('editVariable').addEventListener('click', async () => {
+  const selected = getSelectedRows('#variableTable');
+  if (selected.length !== 1) return alert('変動費の編集は1行のみ選択してください');
+  await editRow(selected[0]);
+});
+
+// ▼ 変動費の削除
+document.getElementById('deleteVariable').addEventListener('click', async () => {
+  const selected = getSelectedRows('#variableTable');
+  if (!selected.length) return alert('削除する変動費を選択してください');
+  if (!confirm(`${selected.length} 件を削除しますか？`)) return;
+  for (const row of selected) await deleteKakei(row.date, row.seq);
+  msg.textContent = `${selected.length} 件削除しました（変動費）`;
+  await refreshAllTables();
+});
 
     // ▼ 月切替
-    document.getElementById('prevMonth').addEventListener('click', () => {
+    document.getElementById('prevMonth').addEventListener('click', async () => {
       monthInput.value = changeMonth(monthInput.value, -1);
-      refreshTables();
+      await refreshAllTables();
     });
-    document.getElementById('nextMonth').addEventListener('click', () => {
+    document.getElementById('nextMonth').addEventListener('click', async () => {
       monthInput.value = changeMonth(monthInput.value, 1);
-      refreshTables();
+      await refreshAllTables();
     });
 
     // ▼ 初期化
@@ -371,8 +522,17 @@
       setToday('#datepicker', '#datemonth');
       await renderCategories();
       await renderPayers();
-      await refreshTables();
+      await refreshAllTables();
     });
+    
+    
+    // ▼各表の更新
+    async function refreshAllTables() {
+      setToday('#datepicker', '#datemonth');
+      await refreshTables();
+      await refreshBurdenTable();
+      await refreshTotalTable();
+    }
   </script>
 </body>
 </html>
