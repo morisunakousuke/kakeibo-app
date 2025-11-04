@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>家計簿入力（スマホ版）</title>
+
+  <style>
+    html, body {
+      height: 100%;
+      overscroll-behavior: none;
+    }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 12px;
+      background-color: #f9f9f9;
+    }
+    h1, h2, h3 {
+      color: #333;
+      margin: 10px 0;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      background-color: #fff;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      border-radius: 6px;
+      background-color: #4caf50;
+      color: #fff;
+      font-size: 16px;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+    .cost-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 15px;
+    }
+
+    .cost-toggle button {
+      flex: 1;
+      max-width: 140px;
+      padding: 10px 0;
+      border: 2px solid #4caf50;
+      border-radius: 8px;
+      background-color: #fff;
+      color: #4caf50;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .cost-toggle button.active {
+      background-color: #4caf50;
+      color: #fff;
+      box-shadow: 0 0 6px rgba(0, 128, 0, 0.4);
+    }
+
+    .month-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .month-control button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+
+    .month-control button:hover {
+      background-color: #45a049;
+    }
+
+    .amount-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 13px;
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+    }
+
+    th { background-color: #f0f0f0; }
+
+    .table-scroll {
+      overflow-x: auto;
+      border-radius: 8px;
+      margin-top: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background: #fff;
+      padding: 4px;
+    }
+
+    #message {
+      text-align: center;
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .settled-row {
+      background-color: #e0e0e0;
+      color: #666;
+    }
+
+/* 固定費・変動費タイトル行を白い枠内に含める */
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* タイトルを中央寄せのベースに */
+  background-color: #fff;
+  border-radius: 8px 8px 0 0;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ccc;
+  position: relative; /* ボタンを絶対位置で左側に置くため */
+}
+
+/* タイトル文字中央寄せ＆サイズ調整 */
+.table-header h3 {
+  margin: 0;
+  font-size: 1.1em;
+  text-align: center;
+  flex: 1;
+  color: #333;
+}
+
+/* 編集・削除ボタンを左端に固定配置 */
+.table-header .action-buttons {
+  position: absolute;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.table-header .action-buttons button {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.table-header .action-buttons button:nth-child(2) {
+  background-color: #e53935;
+}
+
+/* 枠全体のスタイル */
+.table-scroll {
+  background-color: #fff;
+  border-radius: 10px;
+  margin-top: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+    
+    
+    /* 個人負担表・合計表も中央寄せに統一 */
+   .table-scroll h3 {
+     text-align: center;
+     margin: 8px 0;
+     font-size: 16px;
+     font-weight: bold;
+     color: #333;
+   }
+
+  </style>
+</head>
+<body>
+  <h1>家計簿入力</h1>
+
+  <form id="mobileForm">
+    <div class="cost-toggle">
+      <button type="button" class="active" data-type="variable">変動費</button>
+      <button type="button" data-type="fixed">固定費</button>
+    </div>
+
+    <label>日付</label>
+    <input type="date" id="datepicker">
+
+    <label>カテゴリ</label>
+    <select id="categorySelect"><option>読み込み中...</option></select>
+
+    <label>テキスト</label>
+    <textarea id="noteInput" rows="2" placeholder="備考など"></textarea>
+
+    <label>支払者</label>
+    <select id="payerSelect"><option>読み込み中...</option></select>
+
+    <label>金額</label>
+    <div class="amount-grid">
+      <div><label>収入</label><input type="number" id="incomeInput"></div>
+      <div><label>食費</label><input type="number" id="mealInput"></div>
+      <div><label>生活用品</label><input type="number" id="suppliesInput"></div>
+      <div><label>娯楽</label><input type="number" id="playInput"></div>
+      <div><label>生活費</label><input type="number" id="infraInput"></div>
+      <div><label>教育</label><input type="number" id="educationInput"></div>
+      <div><label>その他</label><input type="number" id="othersInput"></div>
+    </div>
+
+    <button type="submit">登録 / 更新</button>
+    <p id="message"></p>
+  </form>
+
+  <h2>家計簿内容</h2>
+  <div class="month-control">
+    <button id="prevMonth">◀ 前月</button>
+    <input type="month" id="datemonth">
+    <button id="nextMonth">翌月 ▶</button>
+  </div>
+
+  <!-- ▼ 個人負担表 -->
+  <div class="table-scroll">
+    <h3>個人負担表</h3>
+    <table id="burdenTable">
+      <thead>
+        <tr>
+          <th>支払者</th><th>金額</th><th>精算済</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- ▼ 合計表 -->
+  <div class="table-scroll">
+    <h3>合計表</h3>
+    <table id="totalTable">
+      <thead>
+        <tr>
+          <th>収入合計</th><th>食事関係</th><th>生活用品</th>
+          <th>娯楽</th><th>生活費</th><th>教育</th><th>その他</th><th>収支</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+<!-- 固定費 -->
+<div class="table-scroll">
+  <div class="table-header">
+    <h3>固定費</h3>
+    <div class="action-buttons">
+      <button id="editFixed">編集</button>
+      <button id="deleteFixed">削除</button>
+    </div>
+  </div>
+
+  <table id="fixedTable">
+    <thead>
+      <tr>
+        <th>選択</th>
+        <th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
+        <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
+        <th>生活費</th><th>教育</th><th>その他</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- 変動費 -->
+<div class="table-scroll">
+  <div class="table-header">
+    <h3>変動費</h3>
+    <div class="action-buttons">
+      <button id="editVariable">編集</button>
+      <button id="deleteVariable">削除</button>
+    </div>
+  </div>
+
+  <table id="variableTable">
+    <thead>
+      <tr>
+        <th>選択</th>
+        <th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
+        <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
+        <th>生活費</th><th>教育</th><th>その他</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+</body>
+</html>
+
+
+  <script type="module">
+    import {
+      loadCategories, loadPayers, loadBurdenTable, loadTotalTable, loadKakeiTable,editRow,
+      insertKakei, updateKakei, deleteKakei, getNextSeq, changeMonth,
+      formatNum, calcTotal, setToday, renderKakeiList,renderBurdenTable,renderTotalTable,
+    } from './common.js';
+
+    const msg = document.getElementById('message');
+    const monthInput = document.getElementById('datemonth');
+    const categorySelect = document.getElementById('categorySelect');
+    const payerSelect = document.getElementById('payerSelect');
+    const toggleButtons = document.querySelectorAll('.cost-toggle button');
+    let currentType = 'variable';
+
+    // ▼ コストタイプ切替
+    toggleButtons.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        toggleButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentType = btn.dataset.type;
+        await renderCategories();
+      });
+    });
+
+    // ▼ カテゴリ・支払者読込
+    async function renderCategories() {
+      const cats = await loadCategories(currentType === 'fixed');
+      categorySelect.innerHTML = '<option value="">選択してください</option>';
+      cats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.categoryid;
+        opt.textContent = c.categoryname;
+        categorySelect.appendChild(opt);
+      });
+    }
+    async function renderPayers() {
+      const data = await loadPayers();
+      payerSelect.innerHTML = '<option value="">選択してください</option>';
+      data.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.payerid;
+        opt.textContent = p.payername;
+        payerSelect.appendChild(opt);
+      });
+    }
+
+    // ▼ 家計簿一覧
+    async function refreshTables() {
+      const month = monthInput.value;
+      const varData = await loadKakeiTable(false, month);
+      const fixData = await loadKakeiTable(true, month);
+      renderKakeiList('#fixedTable tbody', fixData, formatNum);
+      renderKakeiList('#variableTable tbody', varData, formatNum);
+    }
+
+   //  ▼ 個人負担表
+   async function refreshBurdenTable() {
+      const burden = await loadBurdenTable(monthInput.value);
+      renderBurdenTable(burden);
+   }
+
+   //  ▼ 合計表
+   async function refreshTotalTable() {
+      const total = await loadTotalTable(monthInput.value);
+      renderTotalTable(total);
+   }
+
+
+    // ▼ 登録・更新
+   document.getElementById('mobileForm').addEventListener('submit', async (e) => {
+     e.preventDefault();
+     msg.textContent = ''; // メッセージ初期化
+
+     try {
+       // ▼ 入力値取得
+       const dateVal = document.getElementById('datepicker').value;
+       const categoryVal = categorySelect.value;
+       const noteVal = document.getElementById('noteInput').value.trim();
+
+       const income = +document.getElementById('incomeInput').value || 0;
+       const meal = +document.getElementById('mealInput').value || 0;
+       const supplies = +document.getElementById('suppliesInput').value || 0;
+       const play = +document.getElementById('playInput').value || 0;
+       const infra = +document.getElementById('infraInput').value || 0;
+       const education = +document.getElementById('educationInput').value || 0;
+       const others = +document.getElementById('othersInput').value || 0;
+
+       // ▼ バリデーションチェック
+       if (!dateVal) {
+         msg.textContent = '日付を入力してください。';
+         return;
+       }
+
+       if (!categoryVal && !noteVal) {
+         msg.textContent = 'カテゴリまたはテキストを入力してください。';
+         return;
+       }
+
+       if (
+         income === 0 &&
+         meal === 0 &&
+         supplies === 0 &&
+         play === 0 &&
+         infra === 0 &&
+         education === 0 &&
+         others === 0
+       ) {
+         msg.textContent = '金額を1つ以上入力してください。';
+         return;
+       }
+
+       // ▼ 登録データ作成
+       const row = {
+         date: dateVal,
+         categoryid: categoryVal,
+         payerid: payerSelect.value,
+         content: noteVal,
+         income,
+         meal,
+         supplies,
+         play,
+         infra,
+         education,
+         others,
+         fixedcostflg: currentType === 'fixed' ? 2 : 1,
+       };
+
+       // 合計計算（DBには送らない）
+       const totalValue = calcTotal(row);
+       row.seq = await getNextSeq(row.date);
+       const { total, ...insertRow } = row;
+
+       if (window.editTarget) {
+         await updateKakei(window.editTarget.date, window.editTarget.seq, insertRow);
+         msg.textContent = '更新しました。';
+         window.editTarget = null;
+       } else {
+         await insertKakei(insertRow);
+         msg.textContent = '登録しました。';
+       }
+
+       e.target.reset();
+       
+       // ▼ 登録後に今日の日付を再セット
+       const now = new Date();
+       const yyyy = now.getFullYear();
+       const mm = String(now.getMonth() + 1).padStart(2, '0');
+       const dd = String(now.getDate()).padStart(2, '0');
+       document.getElementById('datepicker').value = `${yyyy}-${mm}-${dd}`;
+       await refreshAllTables();
+
+     } catch (err) {
+       console.error('登録エラー:', err);
+       msg.textContent = 'エラー: ' + err.message;
+     }
+   });
+
+    // ▼ 選択行取得
+    function getSelectedRows() {
+      return Array.from(document.querySelectorAll('.row-check:checked')).map(chk => ({
+        date: chk.dataset.date,
+        seq: Number(chk.dataset.seq)
+      }));
+    }
+
+// ▼ 固定費の編集
+document.getElementById('editFixed').addEventListener('click', async () => {
+  const selected = getSelectedRows('#fixedTable');
+  if (selected.length !== 1) return alert('固定費の編集は1行のみ選択してください');
+  await editRow(selected[0]);
+});
+
+// ▼ 固定費の削除
+document.getElementById('deleteFixed').addEventListener('click', async () => {
+  const selected = getSelectedRows('#fixedTable');
+  if (!selected.length) return alert('削除する固定費を選択してください');
+  if (!confirm(`${selected.length} 件を削除しますか？`)) return;
+  for (const row of selected) await deleteKakei(row.date, row.seq);
+  msg.textContent = `${selected.length} 件削除しました（固定費）`;
+  await refreshAllTables();
+});
+
+// ▼ 変動費の編集
+document.getElementById('editVariable').addEventListener('click', async () => {
+  const selected = getSelectedRows('#variableTable');
+  if (selected.length !== 1) return alert('変動費の編集は1行のみ選択してください');
+  await editRow(selected[0]);
+});
+
+// ▼ 変動費の削除
+document.getElementById('deleteVariable').addEventListener('click', async () => {
+  const selected = getSelectedRows('#variableTable');
+  if (!selected.length) return alert('削除する変動費を選択してください');
+  if (!confirm(`${selected.length} 件を削除しますか？`)) return;
+  for (const row of selected) await deleteKakei(row.date, row.seq);
+  msg.textContent = `${selected.length} 件削除しました（変動費）`;
+  await refreshAllTables();
+});
+
+    // ▼ 月切替
+    document.getElementById('prevMonth').addEventListener('click', async () => {
+      monthInput.value = changeMonth(monthInput.value, -1);
+      await refreshAllTables();
+    });
+    document.getElementById('nextMonth').addEventListener('click', async () => {
+      monthInput.value = changeMonth(monthInput.value, 1);
+      await refreshAllTables();
+    });
+
+    // ▼ 初期化
+    window.addEventListener('DOMContentLoaded', async () => {
+      setToday('#datepicker', '#datemonth');
+      await renderCategories();
+      await renderPayers();
+      await refreshAllTables();
+    });
+    
+    
+    // ▼各表の更新
+    async function refreshAllTables() {
+      await refreshTables();
+      await refreshBurdenTable();
+      await refreshTotalTable();
+    }
+    
+     // アドレスバーを自動で隠す（スマホ用）
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+      window.scrollTo(0, 1);
+      }, 100);
+   });
+    
+    
+  </script>
+</body>
+</html>
