@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>支払者メンテナンス</title>
+  <link rel="stylesheet" href="../css/maintenance.css">
+</head>
+<body>
+  <h1>支払者メンテナンス</h1>
+
+  <form id="payerForm">
+    <label for="payerid">支払者ID</label>
+    <input id="payerid" type="text" readonly>
+
+    <label for="payername">支払者名</label>
+    <input id="payername" type="text" placeholder="支払者名を入力">
+
+    <button type="submit">登録</button>
+  </form>
+
+  <p id="message"></p>
+
+  <h2 style="text-align:center;">支払者一覧</h2>
+  <button id="deleteBtn">削除</button>
+
+  <div class="table-container">
+    <table id="payerTable">
+      <thead>
+        <tr><th>選択</th><th>ID</th><th>支払者名</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <button id="backBtn" onclick="location.href='./AdministratorMenu.html'">戻る</button>
+
+  <script type="module" src="../js/payerset.js"></script>
+</body>
+</html>

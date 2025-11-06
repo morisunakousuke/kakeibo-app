@@ -1,0 +1,50 @@
+<style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 16px;
+      background-color: #f9f9f9;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;   /* 中央寄せ */
+      gap: 20px;                 /* ボタンの間隔 */
+      margin-bottom: 20px;
+      flex-wrap: wrap;           /* スマホ時に折り返し */
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 12px 24px;
+      width: 300px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .back-btn {
+      display: block;
+      width: 200px;
+      margin: 0 auto;
+      background-color: #888;
+    }
+
+    .back-btn:hover {
+      background-color: #666;
+    }
+</style>

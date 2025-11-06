@@ -1,0 +1,373 @@
+<style>
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+
+h1, h2 {
+  margin-bottom: 16px;
+}
+
+label {
+  font-weight: bold;
+}
+
+/* 日付行 */
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.date-row label {
+  min-width: 50px;
+  text-align: right;
+}
+
+.date-row input[type="date"] {
+  width: 120px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* 日付入力欄とカテゴリ入力欄の間の余白を調整 */
+#datepicker {
+  margin-bottom: 12px; 
+}
+
+/* カテゴリ・テキスト・支払者行 */
+.form2 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.form2 label {
+  min-width: 60px;
+  text-align: right;
+}
+
+.form2 input,
+.form2 select {
+  width: 140px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* 金額入力行 */
+.money-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.money-group div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.money-group label {
+  text-align: left;
+  margin-bottom: 2px;
+}
+
+.money-group input {
+  width: 80px;
+  padding: 4px 6px;
+  text-align: right;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* ボタン行 */
+.bottan {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 6px 12px;
+  border: 1px solid #888;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #e0e0e0;
+}
+
+/* ====== 家計簿テーブル（色分け） ====== */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  text-align: left;
+}
+
+th {
+  color: #333;
+  font-weight: bold;
+}
+
+/* 年月～支払者（黄緑） */
+#kakeiTable th:nth-child(1),
+#kakeiTable th:nth-child(2),
+#kakeiTable th:nth-child(3),
+#kakeiTable th:nth-child(4) {
+  background-color: #ccffcc;
+}
+
+/* 収入系（黄色） */
+#kakeiTable th:nth-child(5) {
+  background-color: #fff6a4;
+}
+
+/* それ以降（水色系） */
+#kakeiTable th:nth-child(n+6) {
+  background-color: #cce5ff;
+}
+
+/* ====== 家計簿(固定費）テーブル（色分け） ====== */
+
+/* 年月～支払者（黄緑） */
+#koteiTable th:nth-child(1),
+#koteiTable th:nth-child(2),
+#koteiTable th:nth-child(3),
+#koteiTable th:nth-child(4) {
+  background-color: #ccffcc;
+}
+
+/* 収入系（黄色） */
+#koteiTable th:nth-child(5) {
+  background-color: #fff6a4;
+}
+
+/* それ以降（水色系） */
+#koteiTable th:nth-child(n+6) {
+  background-color: #cce5ff;
+}
+
+
+/* ====== 個人負担表＆合計表並び ====== */
+.table-row {
+  display: flex;
+  gap: 30px;
+  align-items: stretch;
+  margin-bottom: 30px; 
+}
+
+/* 個人負担表 */
+#burdenTable {
+  border-collapse: collapse;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ccc;
+}
+
+#burdenTable th,
+#burdenTable td {
+  white-space: nowrap;
+  border: 1px solid #ccc;
+  padding: 3px 12px;
+  text-align: left;
+}
+
+#burdenTable thead {
+  background-color: #c8e6c9; /* 緑系 */
+  color: #1b5e20;
+}
+
+/* 個人負担表：精算済み行をセル単位でグレーアウト */
+#burdenTable tbody tr.settled-row td {
+  background-color: #e0e0e0 !important; 
+  color: #666 !important;
+}
+
+/* ====== ✅ 合計表ヘッダー（ここが追加ポイント） ====== */
+#totalTable thead th:nth-child(1) {
+  background-color: #fff6a4; /* 収入系（黄色） */
+}
+
+#totalTable thead th:nth-child(2) {
+  background-color: #cce5ff; /* 食事関係（水色） */
+}
+
+#totalTable thead th:nth-child(3) {
+  background-color: #cce5ff; /* 雑貨・生活用品系（水色） */
+}
+
+#totalTable thead th:nth-child(4) {
+  background-color: #cce5ff; /* 遊び・娯楽関係（水色） */
+}
+
+#totalTable thead th:nth-child(5) {
+  background-color: #cce5ff; /* 生活費関係（水色） */
+}
+
+#totalTable thead th:nth-child(6) {
+  background-color: #cce5ff; /* 子供・教育（水色） */
+}
+
+#totalTable thead th:nth-child(7) {
+  background-color: #cce5ff; /* その他（水色） */
+}
+
+#totalTable thead th:nth-child(8) {
+  background-color: #ffe0b2; /* 収支（目立たせる淡いオレンジ） */
+  color: #5d4037;
+  font-weight: bold;
+}
+
+#totalTable th {
+  border: 1px solid #d7b87b;
+}
+
+/* テーブル比率 */
+#burdenTable {
+  flex: 0 0 30%;
+}
+#totalTable {
+  flex: 1;
+}
+
+/* メッセージ */
+#message {
+  color: red;
+  font-weight: bold;
+}
+
+/* ▼ セルの見た目（白背景を統一） */
+#burdenTable td,
+#totalTable td ,
+#kakeiTable td {
+  background-color: #ffffff; /* 白背景 */
+  border: 1px solid #ddd;
+  padding: 1px 12px;
+  text-align: left;
+}
+
+/* 家計簿内容テーブルのスクロールエリア */
+.table-scroll {
+  max-height: 400px;   /* スクロール高さ上限 */
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  margin-top: 0;       /* 余白を完全に */
+  padding-top: 0;
+}
+
+/* テーブル自体の余白を削除 */
+.table-scroll table {
+  border-collapse: collapse;
+  margin: 0;
+}
+
+/* スクロールしてもヘッダー固定 */
+.table-scroll thead th {
+  position: sticky;
+  top: 0;                    /* ヘッダー固定 */
+  background-color: inherit; /* 既存のヘッダー色を保持 */
+  z-index: 2;
+  border-bottom: 2px solid #999;
+}
+
+/* 偶数行の背景で見やすく */
+.table-scroll tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* 変動費・固定費チェック */
+.cost-type {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.cost-type label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: normal;
+}
+
+h2, h3, h4 {
+  margin-top: 2px;      /* 上の余白を小さく */
+  margin-bottom: 3px;   /* 下の余白も詰める */
+  padding: 0;           /* 念のためリセット */
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 20px;
+  color: #333;
+  border-left: 6px solid #4caf50;
+  padding-left: 8px;
+}
+
+h3, h4 {
+  font-size: 20px;
+  color: #444;
+}
+
+.table-row {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start; /* 各ブロックの上端を揃える */
+  margin-bottom: 30px;
+}
+
+.table-block {
+  flex: 1;
+}
+
+.table-row .table-block h4 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 18px;
+  color: #333;
+  line-height: 1.1;
+}
+
+.gray-cell {
+  background-color: #e0e0e0;
+  color: #777;
+}
+
+/* 固定費表 (#koteiTable) の行高さと背景色を統一 */
+
+/* 1行あたりの高さを変動費表と合わせる（例：28px程度） */
+#koteiTable tbody td {
+  height: 18px; /* 必要に応じて調整（変動費表に合わせる） */
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* 奇数・偶数行の背景色を統一（白で固定） */
+#koteiTable tbody tr:nth-child(even),
+#koteiTable tbody tr:nth-child(odd) {
+  background-color: #ffffff !important;
+}
+
+
+</style>

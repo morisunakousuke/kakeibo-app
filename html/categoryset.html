@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>カテゴリメンテナンス</title>
+  <link rel="stylesheet" href="../css/maintenance.css">
+</head>
+<body>
+  <h1>カテゴリメンテナンス</h1>
+
+  <div class="cost-toggle">
+    <button type="button" class="active" data-type="variable">変動費用</button>
+    <button type="button" data-type="fixed">固定費用</button>
+  </div>
+
+  <form id="categoryForm">
+    <label for="categoryid">カテゴリID</label>
+    <input id="categoryid" type="text" readonly>
+
+    <label for="categoryname">カテゴリ名</label>
+    <input id="categoryname" type="text" placeholder="カテゴリ名を入力">
+
+    <button type="submit">登録</button>
+  </form>
+
+  <p id="message"></p>
+
+  <h2 style="text-align:center;">カテゴリ一覧</h2>
+  <button id="deleteBtn">削除</button>
+
+  <div class="table-container">
+    <table id="categoryTable">
+      <thead>
+        <tr><th>選択</th><th>ID</th><th>カテゴリ名</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <button id="backBtn" onclick="location.href='./AdministratorMenu.html'">戻る</button>
+
+  <script type="module" src="../js/categoryset.js"></script>
+</body>
+</html>

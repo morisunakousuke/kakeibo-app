@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="icon" type="image/png" href="../image/favicon.png">
+  <link rel="apple-touch-icon" href="../image/favicon.png">
+  <meta name="theme-color" content="#4caf50">
+  <title>家計簿入力（スマホ版）</title>
+  <link rel="stylesheet" href="../css/mobile.css?v=20251106"">
+</head>
+
+<body>
+  <h1>家計簿入力</h1>
+
+  <form id="mobileForm">
+    <div class="cost-toggle">
+      <button type="button" class="active" data-type="variable">変動費</button>
+      <button type="button" data-type="fixed">固定費</button>
+    </div>
+
+    <label>日付</label>
+    <input type="date" id="datepicker">
+
+    <label>カテゴリ</label>
+    <select id="categorySelect"><option>読み込み中...</option></select>
+
+    <label>テキスト</label>
+    <textarea id="noteInput" rows="2" placeholder="備考など"></textarea>
+
+    <label>支払者</label>
+    <select id="payerSelect"><option>読み込み中...</option></select>
+
+    <label>金額</label>
+    <div class="amount-grid">
+      <div><label>収入</label><input type="number" id="incomeInput"></div>
+      <div><label>食費</label><input type="number" id="mealInput"></div>
+      <div><label>生活用品</label><input type="number" id="suppliesInput"></div>
+      <div><label>娯楽</label><input type="number" id="playInput"></div>
+      <div><label>生活費</label><input type="number" id="infraInput"></div>
+      <div><label>教育</label><input type="number" id="educationInput"></div>
+      <div><label>その他</label><input type="number" id="othersInput"></div>
+    </div>
+
+    <button type="submit">登録 / 更新</button>
+    <button type="button" id="clearButton">クリア</button>
+    <button type="move" onclick="location.href='../html/AdministratorMenu.html'">管理者メニュー</button>
+    <p id="message"></p>
+  </form>
+
+  <h2>家計簿内容</h2>
+  <div class="month-control">
+    <button id="prevMonth">◀ 前月</button>
+    <input type="month" id="datemonth">
+    <button id="nextMonth">翌月 ▶</button>
+  </div>
+
+  <!-- ▼ 個人負担表 -->
+  <div class="table-scroll">
+    <h3>個人負担表</h3>
+    <table id="burdenTable">
+      <thead>
+        <tr><th>支払者</th><th>金額</th><th>精算済</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- ▼ 合計表 -->
+  <div class="table-scroll">
+    <h3>合計表</h3>
+    <table id="totalTable">
+      <thead>
+        <tr>
+          <th>収入合計</th><th>食事関係</th><th>生活用品</th>
+          <th>娯楽</th><th>生活費</th><th>教育</th><th>その他</th><th>収支</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- 固定費 -->
+  <div class="table-scroll">
+    <div class="table-header">
+      <h3>固定費</h3>
+      <div class="action-buttons">
+        <button id="editFixed">編集</button>
+        <button id="deleteFixed">削除</button>
+      </div>
+    </div>
+    <div class="table-scroll-x">
+      <table id="fixedTable">
+        <thead>
+          <tr>
+            <th>選択</th><th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
+            <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
+            <th>生活費</th><th>教育</th><th>その他</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 変動費 -->
+  <div class="table-scroll">
+    <div class="table-header">
+      <h3>変動費</h3>
+      <div class="action-buttons">
+        <button id="editVariable">編集</button>
+        <button id="deleteVariable">削除</button>
+      </div>
+    </div>
+    <div class="table-scroll-x">
+      <table id="variableTable">
+        <thead>
+          <tr>
+            <th>選択</th><th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
+            <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
+            <th>生活費</th><th>教育</th><th>その他</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module" src="../js/mobile.js"></script>
+</body>
+</html>
