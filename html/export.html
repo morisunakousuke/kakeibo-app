@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../image/favicon.png">
   <link rel="apple-touch-icon" href="../image/favicon.png">
-    <link rel="stylesheet" href="../css/export.css">
+
+  <!-- ✅ 共通デザインCSS（upload.htmlと統一） -->
+  <link rel="stylesheet" href="../css/maintenance.css">
+  <link rel="stylesheet" href="../css/export.css">
+
   <title>家計簿データ出力</title>
 
-  <!-- ✅ xlsxライブラリ読み込み -->
+  <!-- ✅ xlsxライブラリ -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <!-- ✅ 出力処理スクリプト -->
   <script type="module" src="../js/export.js"></script>
-
-
 </head>
 
 <body>
@@ -30,7 +32,8 @@
       <button id="exportBtn">Excel出力</button>
     </p>
 
-    <button id="backBtn" onclick="location.href='./AdministratorMenu.html'">戻る</button>
+    <!-- ✅ upload.html と同じクラスを付与 -->
+    <button id="backBtn" class="back-button" onclick="location.href='./AdministratorMenu.html'">戻る</button>
  
     <p id="status"></p>
   </div>

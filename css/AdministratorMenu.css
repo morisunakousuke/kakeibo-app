@@ -1,50 +1,75 @@
-<style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 16px;
-      background-color: #f9f9f9;
-    }
+body {
+  text-align: center;
+  padding: 30px;
+  background-color: #f9f9f9;
+}
 
-    h1 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 20px;
-      font-size: 20px;
-    }
+h1 {
+  margin-bottom: 30px;
+  font-size: 22px;
+  color: #333;
+}
 
-    .button-container {
-      display: flex;
-      justify-content: center;   /* 中央寄せ */
-      gap: 20px;                 /* ボタンの間隔 */
-      margin-bottom: 20px;
-      flex-wrap: wrap;           /* スマホ時に折り返し */
-    }
+/* ✅ 各カテゴリ枠（ボタン枠） */
+.menu-section {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  max-width: 500px;
+  margin: 0 auto 25px auto;
+  padding: 20px;
+  text-align: center;
+}
 
-    button {
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      padding: 12px 24px;
-      width: 300px;
-      transition: 0.2s;
-    }
+.menu-section h2 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #1976d2;
+  border-bottom: 2px solid #1976d2;
+  display: inline-block;
+  padding-bottom: 3px;
+}
 
-    button:hover {
-      background-color: #45a049;
-    }
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
 
-    .back-btn {
-      display: block;
-      width: 200px;
-      margin: 0 auto;
-      background-color: #888;
-    }
+.button-container button {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background-color 0.2s ease;
+}
 
-    .back-btn:hover {
-      background-color: #666;
-    }
-</style>
+.button-container button:hover {
+  background-color: #0d47a1;
+}
+
+/* ✅ 戻るボタン（共通） */
+.back-button {
+  display: inline-block;
+  background-color: #888;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background-color 0.2s ease;
+  margin-top: 25px;
+  width: auto;
+}
+
+.back-button:hover {
+  background-color: #666;
+}

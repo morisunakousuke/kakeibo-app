@@ -1,0 +1,123 @@
+body {
+  text-align: center;
+  font-family: "游ゴシック", "Yu Gothic", sans-serif;
+  background-color: #f9f9f9;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 10px;
+}
+
+.form-container {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.form-container input {
+  width: 80px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.control-btn {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.control-btn:hover {
+  background-color: #0d47a1;
+}
+
+#showBtn {
+  display: inline-block;       /* ← ブロック化防止 */
+  width: auto;                 /* ← 自動幅に戻す */
+  min-width: 100px;            /* ← 必要なら幅を固定したい場合 */
+  padding: 8px 18px;
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: background-color 0.2s ease;
+  text-align: center;
+}
+
+#showBtn:hover {
+  background-color: #0d47a1;
+}
+
+
+/* --- グラフエリア（横に広げる） --- */
+#chartWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 40px;              /* グラフ間の余白を少し広く */
+  margin: 20px auto;
+  width: 95%;
+  max-width: 1200px;      /* ← 900px → 1200px に拡張 */
+}
+
+/* 各グラフボックス */
+.chartBox {
+  flex: 1;
+  min-width: 480px;       /* ← 少し広げる（400→480） */
+  max-width: 560px;       /* ← 最大幅も広げる */
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.chartBox h3 {
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* グラフキャンバス */
+canvas {
+  width: 100%;
+  height: 400px !important;   /* yearly_totalと同じ高さ */
+}
+
+/* ===== 表 ===== */
+.data-table {
+  width: 95%;
+  margin: 30px auto;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  text-align: right;
+}
+
+.data-table th {
+  background-color: #c8e6c9;
+  text-align: center;
+}
+
+.data-table tr:nth-child(even) {
+  background-color: #f0f0f0;
+}

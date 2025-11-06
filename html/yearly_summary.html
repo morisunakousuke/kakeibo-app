@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>年別合計平均表</title>
+    <link rel="stylesheet" href="../css/maintenance.css">
+  <link rel="stylesheet" href="../css/yearly_summary.css" />
+  <link rel="icon" type="image/png" href="../image/favicon.png">
+  <link rel="apple-touch-icon" href="../image/favicon.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <script type="module" src="../js/yearly_summary.js"></script>
+</head>
+<body>
+  <h1>年別合計平均表</h1>
+
+  <div class="form-container">
+    <label>From:</label>
+    <input type="number" id="fromYear" min="2000" max="2100" />
+    <label>To:</label>
+    <input type="number" id="toYear" min="2000" max="2100" />
+    <button id="showBtn" class="control-btn">表示</button>
+  </div>
+
+  <!-- 横並びグラフ -->
+  <div id="chartWrapper">
+    <div class="chartBox">
+      <h3>年間合計</h3>
+      <canvas id="chartTotal"></canvas>
+    </div>
+    <div class="chartBox">
+      <h3>月平均</h3>
+      <canvas id="chartAverage"></canvas>
+    </div>
+  </div>
+
+  <div id="tableContainer"></div>
+
+  <button id="backBtn" onclick="location.href='./AdministratorMenu.html'">戻る</button>	
+</body>
+</html>

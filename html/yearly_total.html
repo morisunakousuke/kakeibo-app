@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>年間合計表</title>
+  <link rel="icon" type="image/png" href="../image/favicon.png">
+  <link rel="apple-touch-icon" href="../image/favicon.png">
+  <link rel="stylesheet" href="../css/maintenance.css">
+  <link rel="stylesheet" href="../css/yearly_total.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script type="module" src="../js/yearly_total.js"></script>
+</head>
+
+<body>
+  <h1>年間合計表</h1>
+
+  <div class="form-container">
+    <button id="prevYearBtn" class="control-btn">前年</button>
+    <input type="number" id="yearSelect" value="2025" min="2000" max="2100">
+    <button id="nextYearBtn" class="control-btn">翌年</button>
+    <br><br>
+    <button id="showBtn" class="control-btn">表示</button>
+  </div>
+
+  <div id="summaryBox" class="summary-box">
+    <span>年間支出合計: 0円</span>
+    <span>年間収支額: 0円</span>
+  </div>
+
+  <div id="chartContainer">
+    <canvas id="yearlyChart"></canvas>
+  </div>
+
+  <div id="tableContainer"></div>
+
+  <button id="backBtn" onclick="location.href='./AdministratorMenu.html'">戻る</button>
+</body>
+</html>

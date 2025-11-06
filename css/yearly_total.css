@@ -1,0 +1,107 @@
+body { text-align: center; }
+
+.form-container {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#yearSelect {
+  width: 90px;
+  padding: 4px 6px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.control-btn {
+  display: inline-block;
+  width: auto;
+  min-width: 80px;
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 0 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: background-color 0.2s ease;
+}
+
+#prevYearBtn, #nextYearBtn { background-color: #43a047; color: #fff; }
+#prevYearBtn:hover, #nextYearBtn:hover { background-color: #2e7d32; }
+#showBtn { background-color: #1976d2; color: #fff; }
+#showBtn:hover { background-color: #0d47a1; }
+
+.summary-box {
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.summary-box span { margin: 0 10px; }
+
+#chartContainer {
+  width: 90%;
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+#yearlyChart {
+  width: 100%;
+  max-width: 700px;
+  height: 350px;
+  margin: 0 auto;
+  display: block;
+}
+
+/* ===== 表 ===== */
+.data-table {
+  width: 90%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.data-table th, .data-table td {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  text-align: right;
+}
+
+.data-table th {
+  color: #333;
+  font-weight: bold;
+}
+
+/* ✅ 色設定修正版 */
+.data-table th:nth-child(1) {
+  background-color: #c8e6c9; /* 🌿 緑系 (年月) */
+}
+
+.data-table th:nth-child(2) {
+  background-color: #fff6a4; /* 収入（黄色） */
+}
+
+.data-table th:nth-child(3),
+.data-table th:nth-child(4),
+.data-table th:nth-child(5),
+.data-table th:nth-child(6),
+.data-table th:nth-child(7),
+.data-table th:nth-child(8) {
+  background-color: #cce5ff; /* 支出関連（水色） */
+}
+
+.data-table th:nth-child(9) {
+  background-color: #ffe0b2; /* 収支（オレンジ系） */
+  color: #5d4037;
+}
+
+.positive { color: #2e7d32; font-weight: bold; }
+.negative { color: #d32f2f; font-weight: bold; }
+
+@media (max-width: 600px) {
+  #yearlyChart { height: 220px; }
+  .data-table th, .data-table td { font-size: 12px; padding: 4px; }
+  .summary-box { font-size: 14px; line-height: 1.6; }
+}

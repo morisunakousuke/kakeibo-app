@@ -5,21 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <link rel="icon" type="image/png" href="../image/favicon.png">
   <link rel="apple-touch-icon" href="../image/favicon.png">
-  <link rel="stylesheet" href="../css/AdministratorMenu.css?v=20251106"">
+
+  <!-- ✅ 共通デザイン -->
+  <link rel="stylesheet" href="../css/maintenance.css">
+  <!-- ✅ このページ専用CSS -->
+  <link rel="stylesheet" href="../css/AdministratorMenu.css">
+
   <title>管理者メニュー</title>
 </head>
+
 <body>
   <h1>管理者メニュー</h1>
 
-  <div class="button-container">
-    <button onclick="location.href='./categoryset.html'">カテゴリメンテナンス</button>
-    <button onclick="location.href='./payerset.html'">支払者メンテナンス</button>
+  <!-- ✅ マスタメンテナンス -->
+  <div class="menu-section">
+    <h2>マスタメンテナンス</h2>
+    <div class="button-container">
+      <button onclick="location.href='./categoryset.html'">カテゴリメンテナンス</button>
+      <button onclick="location.href='./payerset.html'">支払者メンテナンス</button>
+    </div>
+  </div>
 
+  <!-- ✅ 情報参照 -->
+  <div class="menu-section">
+    <h2>情報参照</h2>
+    <div class="button-container">
+      <button onclick="location.href='./yearly_total.html'">年間合計表</button>
+      <button onclick="location.href='./yearly_summary.html'">年別合計平均表</button>
+      <button onclick="location.href='./fixed_costs.html'">生活費合計表</button>
+      <button onclick="location.href='./all_personal.html'">全期間個人負担表</button>
+    </div>
   </div>
-  <div class="button-container">
-    <button onclick="location.href='./upload.html'">一括登録</button>
-    <button onclick="location.href='./export.html'">一括出力</button>
+
+  <!-- ✅ 一括入出力 -->
+  <div class="menu-section">
+    <h2>一括入出力</h2>
+    <div class="button-container">
+      <button onclick="location.href='./upload.html'">一括登録</button>
+      <button onclick="location.href='./export.html'">一括出力</button>
+    </div>
   </div>
-  <button class="back-btn" onclick="location.href='../index.html'">戻る</button>
+
+  <!-- ✅ 戻るボタン -->
+  <div style="text-align:center;">
+    <button id="backBtn" onclick="location.href='../index.html'">戻る</button>
+  </div>
 </body>
 </html>

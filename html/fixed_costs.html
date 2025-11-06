@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生活費合計表</title>
+
+  <link rel="stylesheet" href="../css/maintenance.css">
+  <link rel="stylesheet" href="../css/fixed_costs.css">
+
+  <link rel="icon" type="image/png" href="../image/favicon.png">
+  <link rel="apple-touch-icon" href="../image/favicon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script type="module" src="../js/fixed_costs.js"></script>
+</head>
+
+<body>
+  <h1>生活費合計表</h1>
+
+ <div class="form-container">
+  <div class="year-row">
+    <button id="prevYearBtn" class="control-btn">前年</button>
+    <label for="yearSelect">年を選択：</label>
+    <input type="number" id="yearSelect" value="2025" min="2000" max="2100">
+    <button id="nextYearBtn" class="control-btn">翌年</button>
+  </div>
+
+  <div class="show-row">
+    <button id="showBtn" class="control-btn">表示</button>
+  </div>
+</div>
+
+  <div id="summaryBox" class="summary-box">
+    <span>年間生活費合計: 0円</span>
+  </div>
+
+  <div id="chartContainer">
+    <canvas id="fixedCostChart"></canvas>
+  </div>
+
+  <div id="tableContainer"></div>
+
+  <button id="backBtn" onclick="location.href='./AdministratorMenu.html'">戻る</button>
+</body>
+</html>

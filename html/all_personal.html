@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全期間個人負担表</title>
+  <link rel="stylesheet" href="../css/all_personal.css">
+  <link rel="icon" type="image/png" href="../image/favicon.png">
+  <link rel="apple-touch-icon" href="../image/favicon.png">
+  <script type="module" src="../js/all_personal.js"></script>
+</head>
+<body>
+  <h1>全期間個人負担表</h1>
+
+  <!-- 🔹 条件指定フォーム -->
+  <div id="filter-box">
+    <label>年月(From):</label>
+    <input type="month" id="fromMonth">
+
+    <label>〜 To:</label>
+    <input type="month" id="toMonth">
+
+    <label>支払者:</label>
+    <select id="payerSelect">
+      <option value="">すべて</option>
+    </select>
+
+    <label>精算状態:</label>
+    <select id="settledSelect">
+      <option value="">すべて</option>
+      <option value="true">精算済</option>
+      <option value="false">未精算</option>
+    </select>
+
+    <button id="filterBtn">表示</button>
+  </div>
+
+  <!-- 🔹 結果テーブル -->
+  <div id="table-container">
+    <table id="allPersonalTable">
+      <thead>
+        <tr>
+          <th>年月</th>
+          <th>支払者</th>
+          <th>金額</th>
+          <th>精算済</th>
+        </tr>
+      </thead>
+      <tbody id="allPersonalBody"></tbody>
+    </table>
+  </div>
+
+    <button id="backBtn" class="back-button" onclick="location.href='./AdministratorMenu.html'">戻る</button>
+</body>
+</html>

@@ -5,23 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../image/favicon.png">
   <link rel="apple-touch-icon" href="../image/favicon.png">
-  <title>家計データ一括登録</title>
-  <link rel="stylesheet" href="../css/maintenance.css">
-  <!-- Excel解析用ライブラリ -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-</head>
-<body>
-  <h1>家計データ一括登録</h1>
+  <title>家計簿データ一括登録</title>
 
-  <div style="text-align:center;">
-    <input type="file" id="excelFile" accept=".xlsx,.xls">
-    <br><br>
+  <!-- 共通CSS -->
+  <link rel="stylesheet" href="../css/maintenance.css">
+
+  <!-- この画面専用CSS -->
+  <link rel="stylesheet" href="../css/upload.css">
+
+  <!-- XLSXライブラリ -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <!-- JSモジュール -->
+  <script type="module" src="../js/upload.js"></script>
+</head>
+
+<body>
+  <h2>家計簿データ一括登録</h2>
+
+  <div class="container">
+    <p>Excelファイルを選択してアップロードしてください。</p>
+
+    <input type="file" id="excelFile" accept=".xlsx, .xls" />
+
+    <br>
+
     <button id="uploadBtn">アップロード</button>
+
+    <br>
+
+    <button id="backBtn" class="back-button" onclick="location.href='./AdministratorMenu.html'">戻る</button>
+
     <p id="message"></p>
   </div>
-
-  <button id="backBtn" onclick="location.href='./AdministratorMenu.html'">戻る</button>
-
-  <script type="module" src="../js/upload.js"></script>
 </body>
 </html>
