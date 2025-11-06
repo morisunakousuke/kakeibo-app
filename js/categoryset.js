@@ -63,7 +63,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 // 登録処理
 form.addEventListener('submit', async e => {
   e.preventDefault();
-  const isFixed = document.querySelector('input[name="categoryType"]:checked').value === 'fixed';
   const table = isFixed ? 'infra_category' : 'category';
 
   const id = document.getElementById('categoryid').value;
@@ -87,7 +86,6 @@ deleteBtn.addEventListener('click', async () => {
   if (checked.length === 0) return (message.textContent = '削除対象がありません。');
 
   const ids = Array.from(checked).map(cb => cb.value);
-  const isFixed = document.querySelector('input[name="categoryType"]:checked').value === 'fixed';
   const table = isFixed ? 'infra_category' : 'category';
   const { error } = await supabase.from(table).delete().in('categoryid', ids);
   if (error) {

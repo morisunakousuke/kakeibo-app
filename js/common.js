@@ -324,3 +324,40 @@ export function renderTotalTable(data) {
     tbody.appendChild(tr);
   });
 }
+
+/** 指定年月の monthly_settled レコードを確保（存在しなければ全支払者分作成） */
+export async function ensureMonthlySettled(yearMonth) {
+  try {
+    const ym = yearMonth.replace('/', '-'); // ✅ "/"を"-"に統一
+
+    const { data: payers, error: payerErr } = await supabase
+      .from('payer')
+      .select('payerid');
+    if (payerErr) throw new Error('支払者取得エラー: ' + payerErr.message);
+
+    const { data: existing, error: existErr } = await supabase
+      .from('monthly_settled')
+      .select('payerid')
+      .eq('year_month', ym);
+    if (existErr) throw new Error('既存確認エラー: ' + existErr.message);
+
+    const existingIds = existing.map(e => e.payerid);
+    const newRecords = payers
+      .filter(p => !existingIds.includes(p.payerid))
+      .map(p => ({
+        payerid: p.payerid,
+        year_month: ym,
+        settled: false
+      }));
+
+    if (newRecords.length > 0) {
+      const { error: insertErr } = await supabase
+        .from('monthly_settled')
+        .insert(newRecords);
+      if (insertErr) throw new Error('初期レコード作成エラー: ' + insertErr.message);
+      console.log(`monthly_settled: ${newRecords.length}件を自動登録`);
+    }
+  } catch (err) {
+    console.error('ensureMonthlySettled エラー:', err.message);
+  }
+}

@@ -1,7 +1,7 @@
 import {
       loadCategories, loadPayers, loadBurdenTable, loadTotalTable, loadKakeiTable, editRow,
       insertKakei, updateKakei, deleteKakei, getNextSeq, changeMonth,
-      formatNum, calcTotal, setToday, renderKakeiList, renderBurdenTable, renderTotalTable,
+      formatNum, calcTotal, setToday, renderKakeiList, renderBurdenTable, renderTotalTable,ensureMonthlySettled 
     } from '../js/common.js';
 
     const msg = document.getElementById('message');
@@ -217,6 +217,8 @@ document.getElementById('deleteVariable').addEventListener('click', async () => 
     
     // ▼各表の更新
     async function refreshAllTables() {
+      const month = document.getElementById('datemonth').value;
+      await ensureMonthlySettled(month);
       await refreshTables();
       await refreshBurdenTable();
       await refreshTotalTable();

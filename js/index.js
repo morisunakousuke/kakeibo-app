@@ -1,7 +1,7 @@
 import {
   loadCategories, loadPayers, loadBurdenTable, loadTotalTable, loadKakeiTable,
   insertKakei, updateKakei, deleteKakei, getNextSeq, changeMonth,
-  setToday, renderKakeiList, renderBurdenTable, renderTotalTable, formatNum
+  setToday, renderKakeiList, renderBurdenTable, renderTotalTable, formatNum,ensureMonthlySettled 
 } from './common.js';
 
 const msg = document.getElementById('message');
@@ -24,6 +24,8 @@ document.querySelectorAll('input[name="costType"]').forEach(radio => {
 async function initDisplay() {
   const month = monthInput.value;
   const isFixed = document.getElementById('fixedCost').checked;
+
+  await ensureMonthlySettled(month);
 
   const [categories, payers, variable, fixed, burden, total] = await Promise.all([
     loadCategories(isFixed),
