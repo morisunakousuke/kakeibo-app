@@ -60,13 +60,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   await renderTable(isFixed);
 });
 
-// 初期表示
-window.addEventListener('DOMContentLoaded', async () => {
-  const isFixed = document.querySelector('input[name="categoryType"]:checked').value === 'fixed';
-  document.getElementById('categoryid').value = await getNextCategoryId(isFixed);
-  await renderTable(isFixed);
-});
-
 // 登録処理
 form.addEventListener('submit', async e => {
   e.preventDefault();
