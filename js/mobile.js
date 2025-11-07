@@ -217,6 +217,11 @@ document.getElementById('deleteVariable').addEventListener('click', async () => 
       await refreshAllTables();
     });
 
+   // ▼ 手入力でも反映
+   document.getElementById('datemonth').addEventListener('change', async () => {
+     await refreshAllTables();
+   });
+
     // ▼ 初期化
     window.addEventListener('DOMContentLoaded', async () => {
       const dateInput = document.getElementById('datepicker');

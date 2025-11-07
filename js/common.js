@@ -61,11 +61,16 @@ export async function loadKakeiTable(isFixed = false, month = null) {
   const flag = isFixed ? 2 : 1
   let query = supabase.from('kakeicontent').select('*').eq('fixedcostflg', flag).order('date', { ascending: true })
 
-  if (month) {
-    const [year, m] = month.split('-').map(Number)
-    const start = new Date(year, m - 1, 1).toISOString().split('T')[0]
-    const end = new Date(year, m, 0).toISOString().split('T')[0]
-    query = query.gte('date', start).lte('date', end)
+  // タイムゾーンに依存しない「YYYY-MM-DD」文字列で範囲を作成
+  if (month && month.trim() !== '') {
+    const [yearStr, monthStr] = month.split('-');
+    const year = Number(yearStr);
+    const m = Number(monthStr);           // 1〜12
+    const lastDay = new Date(year, m, 0).getDate();  // その月の最終日(ローカルでもOK)
+    const pad = (n) => String(n).padStart(2, '0');
+    const start = `${year}-${pad(m)}-01`;
+    const end   = `${year}-${pad(m)}-${pad(lastDay)}`;
+    query = query.gte('date', start).lte('date', end);
   }
 
   const { data, error } = await query
