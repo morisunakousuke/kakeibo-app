@@ -166,6 +166,17 @@ import {
 document.getElementById('editFixed').addEventListener('click', async () => {
   const selected = getSelectedRows('#fixedTable');
   if (selected.length !== 1) return alert('固定費の編集は1行のみ選択してください');
+  
+  // ✅ 固定費モードに切り替え
+  currentType = 'fixed';
+  document.querySelectorAll('.cost-toggle button').forEach(b => b.classList.remove('active'));
+  const fixedBtn = document.querySelector('.cost-toggle button[data-type="fixed"]');
+  if (fixedBtn) fixedBtn.classList.add('active');
+
+  // ✅ カテゴリリストを固定費用に再読み込み
+  await renderCategories();
+  
+  
   await editRow(selected[0]);
 });
 

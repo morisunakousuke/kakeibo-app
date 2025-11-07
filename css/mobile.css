@@ -254,9 +254,9 @@
 /* 合計表ヘッダー色 */
 #totalTable thead th:nth-child(1) { background-color: #fff6a4; }  /* 収入 */
 #totalTable thead th:nth-child(n+2):nth-child(-n+7) { background-color: #cce5ff; } /* 食費～その他 */
-#totalTable thead th:nth-child(8) {
-  background-color: #ffe0b2; color: #5d4037; font-weight: bold; /* 収支 */
-}
+#totalTable thead th:nth-child(8) { background-color: #ffecb3; }  /* 支出合計 */
+#totalTable thead th:nth-child(9) { background-color: #ffe0b2; }  /* 支出合計 */
+
 
 /* 固定費・変動費テーブルヘッダー色 */
 #fixedTable thead th:nth-child(2),

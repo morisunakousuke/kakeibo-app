@@ -7,16 +7,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const payerSelect = document.getElementById("payerSelect");
   const settledSelect = document.getElementById("settledSelect");
   const filterBtn = document.getElementById("filterBtn");
+  const summaryContainer = document.getElementById("payer-summary-container");
 
   await loadPayers();
-
   tbody.innerHTML = "<tr><td colspan='4'>条件を指定して「表示」を押してください</td></tr>";
 
   filterBtn.addEventListener("click", async () => {
     await loadFilteredData();
   });
 
-  // 支払者リスト取得
+  // 🔹 支払者リスト取得
   async function loadPayers() {
     const { data, error } = await supabase.from("payer").select("payerid, payername").order("payerid");
     if (error) {
@@ -29,7 +29,51 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // データ取得処理
+  // 🔹 支払者別合計を計算して描画
+  function renderPayerSummary(rows) {
+    if (!summaryContainer) return;
+    if (!rows || rows.length === 0) {
+      summaryContainer.innerHTML = "";
+      return;
+    }
+
+    const byPayer = new Map();
+    let grand = 0;
+
+    rows.forEach(r => {
+      const payer = r.payername || `ID:${r.payerid}`;
+      const val = Number(r.total || 0);
+      if (!byPayer.has(payer)) byPayer.set(payer, 0);
+      byPayer.set(payer, byPayer.get(payer) + val);
+      grand += val;
+    });
+
+    const list = Array.from(byPayer.entries())
+      .sort((a,b) => b[1] - a[1])
+      .map(([payer, sum]) => `
+        <tr>
+          <td>${payer}</td>
+          <td>${sum.toLocaleString()}</td>
+        </tr>
+      `).join("");
+
+    summaryContainer.innerHTML = `
+      <table id="payer-summary">
+        <thead>
+          <tr><th>支払者</th><th>合計金額</th></tr>
+        </thead>
+        <tbody>
+          ${list}
+          <tr>
+            <th>総合計</th>
+            <th>${grand.toLocaleString()}</th>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  }
+
+  // 🔹 データ取得処理
   async function loadFilteredData() {
     tbody.innerHTML = "<tr><td colspan='4'>読み込み中...</td></tr>";
 
@@ -40,7 +84,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const settledVal = settledSelect.value;
 
       let query = supabase.from("monthly_personal_summary").select("*");
-
       if (fromVal) query = query.gte("year_month", fromVal);
       if (toVal) query = query.lte("year_month", toVal);
       if (payerid) query = query.eq("payerid", payerid);
@@ -49,15 +92,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       const { data, error } = await query;
       if (error) throw error;
 
-      // 金額0除外
       const filtered = (data || []).filter(r => (r.total ?? 0) !== 0);
-
       if (filtered.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4">該当データがありません</td></tr>`;
+        renderPayerSummary([]);
         return;
       }
 
-      // 並び替え
       filtered.sort((a, b) => {
         const ymA = a.year_month || "";
         const ymB = b.year_month || "";
@@ -68,7 +109,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           : ymA.localeCompare(ymB);
       });
 
-      // 表描画
       tbody.innerHTML = filtered
         .map(
           r => `
@@ -87,7 +127,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         )
         .join("");
 
-      // チェック更新
       document.querySelectorAll(".settle-checkbox").forEach(cb => {
         cb.addEventListener("change", async e => {
           const yearMonth = e.target.dataset.year;
@@ -100,7 +139,6 @@ document.addEventListener("DOMContentLoaded", async () => {
               .update({ settled: newVal })
               .eq("payerid", payerid)
               .eq("year_month", yearMonth);
-
             if (error) throw error;
           } catch (err) {
             console.error("更新失敗:", err);
@@ -109,9 +147,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         });
       });
+
+      // 🔹 支払者別合計描画
+      renderPayerSummary(filtered);
+
     } catch (err) {
       console.error("読み込みエラー:", err);
       tbody.innerHTML = `<tr><td colspan="4" style="color:red;">データ取得に失敗しました</td></tr>`;
+      renderPayerSummary([]);
     }
   }
 });

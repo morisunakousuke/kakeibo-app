@@ -76,8 +76,6 @@ export async function loadKakeiTable(isFixed = false, month = null) {
 /** 編集ボタン押下時の入力欄反映処理 */
 export async function editRow(selectedRow) {
   const { date, seq } = selectedRow;
-
-  // 月の入力要素を直接取得
   const monthInput = document.getElementById('datemonth');
 
   // 固定費・変動費両方から検索
@@ -90,25 +88,41 @@ export async function editRow(selectedRow) {
     return;
   }
 
-  // 入力欄を直接DOMから取得して反映
-  document.getElementById('datepicker').value = target.date;
-  document.getElementById('categorySelect').value = target.categoryid || '';
-  document.getElementById('payerSelect').value = target.payerid || '';
-  document.getElementById('noteInput').value = target.content || '';
-  document.getElementById('incomeInput').value = target.income || '';
-  document.getElementById('mealInput').value = target.meal || '';
-  document.getElementById('suppliesInput').value = target.supplies || '';
-  document.getElementById('playInput').value = target.play || '';
-  document.getElementById('infraInput').value = target.infra || '';
-  document.getElementById('educationInput').value = target.education || '';
-  document.getElementById('othersInput').value = target.others || '';
+  // 共通部分（存在チェック付き）
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val ?? '';
+  };
 
-  // メッセージと編集フラグ
+  setVal('datepicker', target.date);
+  setVal('category', target.categoryid);
+  setVal('categorySelect', target.categoryid); // モバイル対応
+  setVal('payer', target.payerid);
+  setVal('payerSelect', target.payerid); // モバイル対応
+  setVal('text', target.content);
+  setVal('noteInput', target.content); // モバイル対応
+
+  setVal('income', target.income);
+  setVal('incomeInput', target.income); // モバイル対応
+  setVal('meal', target.meal);
+  setVal('mealInput', target.meal);
+  setVal('supplies', target.supplies);
+  setVal('suppliesInput', target.supplies);
+  setVal('play', target.play);
+  setVal('playInput', target.play);
+  setVal('infra', target.infra);
+  setVal('infraInput', target.infra);
+  setVal('education', target.education);
+  setVal('educationInput', target.education);
+  setVal('others', target.others);
+  setVal('othersInput', target.others);
+
+  // メッセージ・編集フラグ
   const msg = document.getElementById('message');
-  msg.textContent = `編集中：${target.date} (No.${target.seq})`;
+  if (msg) msg.textContent = `編集中：${target.date} (No.${target.seq})`;
+
   window.editTarget = { date, seq };
 
-  // ページ上部にスクロール
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -217,32 +231,26 @@ export function renderKakeiList(selector, data, formatNum) {
   data.forEach(r => {
     const tr = document.createElement('tr');
 
-    const amounts = [
-      r.income, r.meal, r.supplies, r.play,
-      r.infra, r.education, r.others
-    ];
-
     tr.innerHTML = `
       <td><input type="checkbox" class="row-check" data-date="${r.date}" data-seq="${r.seq}"></td>
       <td>${r.date ? r.date.slice(5) : ''}</td>
       <td>${r.categoryname || ''}</td>
       <td>${r.content || ''}</td>
       <td>${r.payername || ''}</td>
-      <td class="numcell">${r.income ? formatNum(r.income) : ''}</td>
-      <td class="numcell">${r.meal ? formatNum(r.meal) : ''}</td>
-      <td class="numcell">${r.supplies ? formatNum(r.supplies) : ''}</td>
-      <td class="numcell">${r.play ? formatNum(r.play) : ''}</td>
-      <td class="numcell">${r.infra ? formatNum(r.infra) : ''}</td>
-      <td class="numcell">${r.education ? formatNum(r.education) : ''}</td>
-      <td class="numcell">${r.others ? formatNum(r.others) : ''}</td>
+      <td class="numcell">${formatNum(r.income)}</td>
+      <td class="numcell">${formatNum(r.meal)}</td>
+      <td class="numcell">${formatNum(r.supplies)}</td>
+      <td class="numcell">${formatNum(r.play)}</td>
+      <td class="numcell">${formatNum(r.infra)}</td>
+      <td class="numcell">${formatNum(r.education)}</td>
+      <td class="numcell">${formatNum(r.others)}</td>
     `;
 
-    // 固定費表のみ 0セルをグレーアウト（値は空白）
-    if (selector === '#fixedTable tbody') {
-      tr.querySelectorAll('.numcell').forEach((td, i) => {
-        const val = Number(amounts[i]);
-        if (!val) {
-          td.style.backgroundColor = '#eaeaea';
+    // 固定費表(#koteiTable)なら、空欄セルをグレーにする
+    if (selector === '#koteiTable tbody') {
+      tr.querySelectorAll('.numcell').forEach(td => {
+        if (!td.textContent || td.textContent === '0') {
+          td.style.backgroundColor = '#f0f0f0';
           td.style.color = '#888';
         }
       });
@@ -304,23 +312,41 @@ export function renderTotalTable(data) {
 
   data.forEach(r => {
     const tr = document.createElement('tr');
+
+    // 値を安全に取得（null対策）
+    const income = r.income_total ?? 0;
+    const meal = r.meal_total ?? 0;
+    const supplies = r.supplies_total ?? 0;
+    const play = r.play_total ?? 0;
+    const infra = r.infra_total ?? 0;
+    const education = r.education_total ?? 0;
+    const others = r.others_total ?? 0;
+    const expenditure = r.expenditure ?? 0;
+
+    // ✅ 支出合計（収入以外の合計）
+    const expenseTotal = meal + supplies + play + infra + education + others;
+
+    // 表示順
     const cols = [
-      r.income_total,
-      r.meal_total,
-      r.supplies_total,
-      r.play_total,
-      r.infra_total,
-      r.education_total,
-      r.others_total,
-      r.expenditure
+      income,
+      meal,
+      supplies,
+      play,
+      infra,
+      education,
+      others,
+      expenseTotal,  // ← 新規列
+      expenditure
     ];
 
     cols.forEach((val, i) => {
       const td = document.createElement('td');
-      td.textContent = (val ?? 0).toLocaleString('ja-JP'); // ← null/undefinedを0に
-      if (i === 7 && val < 0) td.style.color = 'red'; // マイナス収支は赤文字
+      td.textContent = val.toLocaleString('ja-JP');
+      // 収支（最後の列）がマイナスなら赤字表示
+      if (i === cols.length - 1 && val < 0) td.style.color = 'red';
       tr.appendChild(td);
     });
+
     tbody.appendChild(tr);
   });
 }

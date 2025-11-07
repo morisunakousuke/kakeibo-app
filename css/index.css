@@ -232,9 +232,16 @@ th {
 }
 
 #totalTable thead th:nth-child(8) {
-  background-color: #ffe0b2; /* 収支（目立たせる淡いオレンジ） */
+  background-color: #ffecb3; /* 支出合計（やや淡いオレンジ） */
   color: #5d4037;
   font-weight: bold;
+}
+
+#totalTable thead th:nth-child(9) {
+  background-color: #ffe0b2; /* 収支（目立たせる濃いめオレンジ） */
+  color: #5d4037;
+  font-weight: bold;
+
 }
 
 #totalTable th {
@@ -372,5 +379,12 @@ h3, h4 {
   background-color: #ffffff !important;
 }
 
+/* 合計表ヘッダの1行化（折り返し防止＆フォント調整） */
+#totalTable thead th {
+  white-space: nowrap;        /* 折り返し禁止 */
+  font-size: 13px;            /* 少し小さく */
+  padding: 4px 8px;           /* 横詰め */
+  text-align: center;         /* 中央寄せ */
+}
 
 </style>

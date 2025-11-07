@@ -14,25 +14,33 @@
 
   <!-- 🔹 条件指定フォーム -->
   <div id="filter-box">
-    <label>年月(From):</label>
-    <input type="month" id="fromMonth">
+    <div class="field">
+      <label for="fromMonth">年月(From):</label>
+      <input type="month" id="fromMonth">
+    </div>
 
-    <label>〜 To:</label>
-    <input type="month" id="toMonth">
+    <div class="field">
+      <label for="toMonth">〜 To:</label>
+      <input type="month" id="toMonth">
+    </div>
 
-    <label>支払者:</label>
-    <select id="payerSelect">
-      <option value="">すべて</option>
-    </select>
+    <div class="field">
+      <label for="payerSelect">支払者:</label>
+      <select id="payerSelect">
+        <option value="">すべて</option>
+      </select>
+    </div>
 
-    <label>精算状態:</label>
-    <select id="settledSelect">
-      <option value="">すべて</option>
-      <option value="true">精算済</option>
-      <option value="false">未精算</option>
-    </select>
+    <div class="field">
+      <label for="settledSelect">精算状態:</label>
+      <select id="settledSelect">
+        <option value="">すべて</option>
+        <option value="true">精算済</option>
+        <option value="false">未精算</option>
+      </select>
+    </div>
 
-    <button id="filterBtn">表示</button>
+    <button id="filterBtn" class="filter-button">表示</button>
   </div>
 
   <!-- 🔹 結果テーブル -->
@@ -50,6 +58,9 @@
     </table>
   </div>
 
-    <button id="backBtn" class="back-button" onclick="location.href='./AdministratorMenu.html'">戻る</button>
+  <!-- 🔹 支払者別合計 -->
+  <div id="payer-summary-container" style="margin:16px auto; width:95%;"></div>
+
+  <button id="backBtn" class="back-button" onclick="location.href='./AdministratorMenu.html'">戻る</button>
 </body>
 </html>
