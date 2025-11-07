@@ -219,6 +219,17 @@ document.getElementById('deleteVariable').addEventListener('click', async () => 
 
     // ▼ 初期化
     window.addEventListener('DOMContentLoaded', async () => {
+      const dateInput = document.getElementById('datepicker');
+      dateInput.addEventListener('focus', () => {
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+         return;
+        }
+        dateInput.type = 'date';
+      });
+     dateInput.addEventListener('blur', () => {
+     dateInput.type = 'text';
+   });
+    
       setToday('#datepicker', '#datemonth');
       await renderCategories();
       await renderPayers();
