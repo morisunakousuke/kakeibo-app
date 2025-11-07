@@ -2,137 +2,119 @@ body {
   text-align: center;
 }
 
-/* ===== フォーム ===== */
-.form-container {
-  text-align: center;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-#yearSelect {
-  width: 90px;
-  padding: 4px 6px;
-  font-size: 14px;
-  text-align: center;
-}
-
-/* ===== ボタン共通 ===== */
-.control-btn {
-  display: inline-block;
-  width: auto;
-  min-width: 80px;
-  padding: 6px 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  transition: background-color 0.2s ease;
-}
-
-/* 色設定 (yearly_totalと同様) */
-#prevYearBtn, #nextYearBtn {
-  background-color: #43a047;
-  color: #fff;
-}
-#prevYearBtn:hover, #nextYearBtn:hover {
-  background-color: #2e7d32;
-}
-
-#showBtn {
-  background-color: #1976d2;
-  color: #fff;
-}
-#showBtn:hover {
-  background-color: #0d47a1;
-}
-
-/* ===== ボタンの配置 ===== */
-.year-row {
-  margin-bottom: 5px;
-}
-.show-row {
-  margin-top: 6px;
-}
-
-/* ===== サマリー ===== */
-.summary-box {
-  margin-top: 15px;
-  font-size: 16px;
-  font-weight: bold;
-}
-.summary-box span {
-  margin: 0 10px;
-}
-
-/* ===== グラフ ===== */
-#chartContainer {
-  width: 90%;
-  max-width: 800px;
+/* === 年選択エリア === */
+.control-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
   margin: 20px auto;
+  background-color: #f7f7f7;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: fit-content;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-#fixedCostChart {
+.control-area label {
+  font-weight: bold;
+  color: #333;
+}
+
+.control-area input {
+  width: 90px;
+  text-align: center;
+  font-size: 14px;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #bbb;
+  background-color: #fff;
+}
+
+.control-area button {
+  padding: 6px 14px;
+  border: 1px solid #888;
+  border-radius: 6px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-area button:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-1px);
+}
+
+/* === テーブル === */
+.table-container {
+  width: 95%;
+  margin: 0 auto 25px auto;
+}
+
+#fixedTable {
   width: 100%;
-  max-width: 700px;
-  height: 350px;
-  margin: 0 auto;
-  display: block;
-}
-
-/* ===== テーブル ===== */
-.data-table {
-  width: 90%;
-  margin: 0 auto;
   border-collapse: collapse;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.data-table th,
-.data-table td {
+#fixedTable th, #fixedTable td {
   border: 1px solid #ccc;
   padding: 6px 10px;
   text-align: right;
 }
 
-.data-table th {
-  background-color: #cce5ff;
+#fixedTable th {
+  background-color: #bbdefb; /* 青系ヘッダー */
   color: #333;
   font-weight: bold;
+  text-align: center;
 }
 
-/* ===== 戻るボタン ===== */
-.back-button {
-  display: inline-block;
-  background-color: #888;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: background-color 0.2s ease;
-  margin-top: 20px;
-  width: auto;        /* ← 幅を固定せず自然なサイズに */
+/* === グラフ配置 === */
+#chartContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 1行3列 */
+  justify-items: center;
+  gap: 25px;
+  margin: 30px auto;
+  max-width: 1200px;
 }
-.back-button:hover {
-  background-color: #666;
+
+.chart-block {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  width: 95%;
+  max-width: 400px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chart-block h3 {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #1976d2;
+}
+
+.chart-block canvas {
+  width: 100% !important;
+  height: 280px !important;
+}
+
+/* === スマホ対応 === */
+@media (max-width: 900px) {
+  #chartContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 600px) {
-  #fixedCostChart {
-    height: 220px;
+  #chartContainer {
+    grid-template-columns: 1fr;
   }
-  .data-table th,
-  .data-table td {
-    font-size: 12px;
-    padding: 4px;
-  }
-  .summary-box {
-    font-size: 14px;
-    line-height: 1.6;
+  .chart-block canvas {
+    height: 240px !important;
   }
 }

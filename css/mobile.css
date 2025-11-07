@@ -58,22 +58,6 @@
       background-color: #45a049;
     }
     
-    button[type="move"] {
-      width: 100%;
-      border-radius: 6px;
-      background-color: #9e9e9e;   /* 標準グレー */
-      color: #fff;
-      font-size: 16px;
-      padding: 10px;
-      border: none;
-      cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 少し立体感 */
-    }
-
-    button[type="move"]:hover {
-      background-color: #757575;   /* 濃いめグレー */
-    }
     .cost-toggle {
       display: flex;
       justify-content: center;
@@ -305,6 +289,22 @@
 }
 #clearButton:hover {
   background-color: #d32f2f;
+}
+
+.admin-btn {
+      width: 100%;
+      border-radius: 6px;
+      background-color: #9e9e9e;   /* 標準グレー */
+      color: #fff;
+      font-size: 16px;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 少し立体感 */
+}
+.admin-btn:hover {
+      background-color: #757575;   /* 濃いめグレー */
 }
 
 </style>

@@ -11,37 +11,57 @@
   <link rel="icon" type="image/png" href="../image/favicon.png">
   <link rel="apple-touch-icon" href="../image/favicon.png">
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-  <script type="module" src="../js/fixed_costs.js"></script>
+  <!-- Chart.js & plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 
 <body>
   <h1>生活費合計表</h1>
 
- <div class="form-container">
-  <div class="year-row">
-    <button id="prevYearBtn" class="control-btn">前年</button>
-    <label for="yearSelect">年を選択：</label>
+  <!-- 🔹 年選択エリア（もとの感じに戻す） -->
+  <div class="control-area">
+    <button id="prevYearBtn">前年</button>
+    <label for="yearSelect">年：</label>
     <input type="number" id="yearSelect" value="2025" min="2000" max="2100">
-    <button id="nextYearBtn" class="control-btn">翌年</button>
+    <button id="nextYearBtn">翌年</button>
+    <button id="showBtn">表示</button>
   </div>
-
-  <div class="show-row">
-    <button id="showBtn" class="control-btn">表示</button>
-  </div>
-</div>
 
   <div id="summaryBox" class="summary-box">
     <span>年間生活費合計: 0円</span>
   </div>
 
-  <div id="chartContainer">
-    <canvas id="fixedCostChart"></canvas>
+  <!-- ===== テーブル（上部） ===== -->
+      <h2>月別生活費一覧</h2>
+  <div class="table-container">
+    <table id="fixedTable">
+      <thead>
+        <tr>
+          <th>月</th>
+          <th>電気代</th>
+          <th>ガス代</th>
+          <th>水道代</th>
+          <th>ネット代</th>
+          <th>住宅ローン</th>
+          <th>合計</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 
-  <div id="tableContainer"></div>
+  <!-- ===== グラフ（下部） ===== -->
+  <div id="chartContainer">
+    <div class="chart-block"><h3>電気代</h3><canvas id="chartElectric"></canvas></div>
+    <div class="chart-block"><h3>ガス代</h3><canvas id="chartGas"></canvas></div>
+    <div class="chart-block"><h3>水道代</h3><canvas id="chartWater"></canvas></div>
+    <div class="chart-block"><h3>ネット代</h3><canvas id="chartInternet"></canvas></div>
+    <div class="chart-block"><h3>住宅ローン</h3><canvas id="chartMortgage"></canvas></div>
+  </div>
 
   <button id="backBtn" onclick="location.href='./AdministratorMenu.html'">戻る</button>
+
+  <script type="module" src="../js/fixed_costs.js"></script>
 </body>
 </html>

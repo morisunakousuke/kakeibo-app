@@ -1,133 +1,153 @@
 import { supabase } from './common.js';
 
-const showBtn = document.getElementById('showBtn');
-const prevYearBtn = document.getElementById('prevYearBtn');
-const nextYearBtn = document.getElementById('nextYearBtn');
-const yearSelect = document.getElementById('yearSelect');
-const tableContainer = document.getElementById('tableContainer');
-const chartCanvas = document.getElementById('fixedCostChart');
-const summaryBox = document.getElementById('summaryBox');
+if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+  Chart.register(ChartDataLabels);
+}
 
-let chartInstance = null;
+let chartInstance = {};
 
-// 🔁 前年・翌年切り替え
-prevYearBtn.addEventListener('click', () => {
-  yearSelect.value = Number(yearSelect.value) - 1;
-  showBtn.click();
-});
-nextYearBtn.addEventListener('click', () => {
-  yearSelect.value = Number(yearSelect.value) + 1;
-  showBtn.click();
-});
+function formatYM(ym) {
+  if (!ym) return '';
+  const [y, m] = ym.split('-');
+  return `${Number(m)}月`;
+}
 
-// 📊 表示ボタン押下
-showBtn.addEventListener('click', async () => {
-  const year = yearSelect.value;
-  if (!year) return alert('年を入力してください。');
-  tableContainer.innerHTML = '<p>読み込み中...</p>';
-
+async function fetchFixedCosts(year) {
   const { data, error } = await supabase
     .from('fixed_costs_summary')
     .select('*')
     .ilike('year_month', `${year}-%`)
     .order('year_month', { ascending: true });
 
-  if (error) {
-    console.error('Supabaseエラー:', error);
-    tableContainer.innerHTML = '<p style="color:red;">データ取得に失敗しました。</p>';
-    return;
-  }
+  if (error) throw error;
+  return data || [];
+}
 
-  if (!data || data.length === 0) {
-    tableContainer.innerHTML = '<p>該当データがありません。</p>';
-    if (chartInstance) chartInstance.destroy();
-    summaryBox.innerHTML = `<span>年間生活費合計: 0円</span>`;
-    return;
-  }
+// === 表の描画 ===
+function renderTable(data) {
+  const tbody = document.querySelector('#fixedTable tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
 
-  // ✅ 年間合計
-  const totalYear = data.reduce((sum, r) => sum + (r.total || 0), 0);
+  let totalYear = 0;
+
+  data.forEach(row => {
+    const month = row.year_month.split('-')[1].replace(/^0/, '') + '月';
+    const monthTotal =
+      (row.electricity ?? 0) +
+      (row.gas ?? 0) +
+      (row.water ?? 0) +
+      (row.internet ?? 0) +
+      (row.mortgage ?? 0);
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${month}</td>
+      <td>${row.electricity?.toLocaleString() || 0}</td>
+      <td>${row.gas?.toLocaleString() || 0}</td>
+      <td>${row.water?.toLocaleString() || 0}</td>
+      <td>${row.internet?.toLocaleString() || 0}</td>
+      <td>${row.mortgage?.toLocaleString() || 0}</td>
+      <td><strong>${monthTotal.toLocaleString()}</strong></td>
+    `;
+    tbody.appendChild(tr);
+    totalYear += monthTotal;
+  });
+
+  const summaryBox = document.getElementById('summaryBox');
   summaryBox.innerHTML = `<span>年間生活費合計: ${totalYear.toLocaleString()}円</span>`;
+}
 
-  // ✅ テーブル生成
-  const table = document.createElement('table');
-  table.classList.add('data-table');
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th>年月</th>
-        <th>電気代</th>
-        <th>ガス代</th>
-        <th>水道代</th>
-        <th>ネット代</th>
-        <th>住宅ローン</th>
-        <th>合計</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${data.map(r => `
-        <tr>
-          <td>${formatYM(r.year_month)}</td>
-          <td>${fmt(r.electricity)}</td>
-          <td>${fmt(r.gas)}</td>
-          <td>${fmt(r.water)}</td>
-          <td>${fmt(r.internet)}</td>
-          <td>${fmt(r.mortgage)}</td>
-          <td>${fmt(r.total)}</td>
-        </tr>
-      `).join('')}
-    </tbody>
-  `;
-  tableContainer.innerHTML = '';
-  tableContainer.appendChild(table);
+// === グラフ描画 ===
+function createChart(canvasId, label, dataArr, labels, color, year) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  if (chartInstance[canvasId]) chartInstance[canvasId].destroy();
 
-  // ✅ 折れ線グラフ用データ
-  const labels = data.map(r => formatYM(r.year_month));
-  const datasets = [
-    { label: '電気代', data: data.map(r => r.electricity), borderColor: '#ffb74d' },
-    { label: 'ガス代', data: data.map(r => r.gas), borderColor: '#ef5350' },
-    { label: '水道代', data: data.map(r => r.water), borderColor: '#42a5f5' },
-    { label: 'ネット代', data: data.map(r => r.internet), borderColor: '#26a69a' },
-    { label: '住宅ローン', data: data.map(r => r.mortgage), borderColor: '#8d6e63' }
-  ];
+  const safeData = dataArr.map(v => (v == null ? 0 : v));
 
-  if (chartInstance) chartInstance.destroy();
-  chartInstance = new Chart(chartCanvas, {
+  chartInstance[canvasId] = new Chart(ctx, {
     type: 'line',
-    data: { labels, datasets },
+    data: {
+      labels,
+      datasets: [
+        {
+          label: `${label} (${year}年)`,
+          data: safeData,
+          borderColor: color,
+          backgroundColor: color + '33',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3,
+        },
+      ],
+    },
     options: {
-      responsive: true,
+      responsive: false,
       maintainAspectRatio: false,
       plugins: {
-        title: {
-          display: true,
-          text: `${year}年 生活費の月別推移`,
-          font: { size: 18 }
-        },
-        legend: { position: 'bottom' },
+        legend: { display: false },
         datalabels: {
           align: 'top',
-          font: { size: 11, weight: 'bold' },
-          formatter: (v) => (v ? v.toLocaleString() : '')
-        }
+          font: { size: 10, weight: 'bold' },
+          formatter: v => (v ? v.toLocaleString() : ''),
+        },
       },
       scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { callback: (val) => val.toLocaleString() + '円' }
-        }
-      }
+        y: { beginAtZero: true },
+      },
     },
-    plugins: [ChartDataLabels]
   });
+}
+
+async function renderFixedCostCharts(year) {
+  const data = await fetchFixedCosts(year);
+  if (!data || data.length === 0) {
+    console.warn('データが存在しません');
+    return;
+  }
+
+  const labels = data.map(r => formatYM(r.year_month));
+  Object.values(chartInstance).forEach(c => c.destroy());
+  chartInstance = {};
+
+  createChart('chartElectric', '電気代', data.map(r => r.electricity), labels, '#ffb74d', year);
+  createChart('chartGas', 'ガス代', data.map(r => r.gas), labels, '#ef5350', year);
+  createChart('chartWater', '水道代', data.map(r => r.water), labels, '#42a5f5', year);
+  createChart('chartInternet', 'ネット代', data.map(r => r.internet), labels, '#26a69a', year);
+  createChart('chartMortgage', '住宅ローン', data.map(r => r.mortgage), labels, '#8d6e63', year);
+
+  renderTable(data); // ← 表も描画
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const now = new Date();
+  const thisYear = now.getFullYear();
+  document.getElementById('yearSelect').value = thisYear;
+  await renderFixedCostCharts(thisYear);
 });
 
-// 共通フォーマット関数
-function fmt(num) {
-  if (num == null || num === 0) return '';
-  return num.toLocaleString();
+document.getElementById('showBtn').addEventListener('click', async () => {
+  const year = document.getElementById('yearSelect').value;
+  await renderFixedCostCharts(year);
+});
+
+function clampYear(v) {
+  const n = Number(v) || new Date().getFullYear();
+  return Math.min(2100, Math.max(2000, n));
 }
-function formatYM(ym) {
-  const [y, m] = ym.split('-');
-  return `${Number(m)}月`;
+
+async function shiftYear(delta) {
+  const input = document.getElementById('yearSelect');
+  input.value = clampYear((Number(input.value) || new Date().getFullYear()) + delta);
+  await renderFixedCostCharts(input.value);
 }
+
+document.getElementById('prevYearBtn').addEventListener('click', () => shiftYear(-1));
+document.getElementById('nextYearBtn').addEventListener('click', () => shiftYear(1));
+
+// （お好みで）年入力の変更だけでも即反映したい場合
+document.getElementById('yearSelect').addEventListener('change', async (e) => {
+  e.target.value = clampYear(e.target.value);
+  await renderFixedCostCharts(e.target.value);
+});
