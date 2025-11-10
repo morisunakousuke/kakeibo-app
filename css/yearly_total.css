@@ -75,26 +75,51 @@ body { text-align: center; }
 }
 
 /* ✅ 色設定修正版 */
+.data-table th:nth-child(1),
+.data-table th:nth-child(2),
+.data-table th:nth-child(3),
+.data-table th:nth-child(4),
+.data-table th:nth-child(5),
+.data-table th:nth-child(6),
+.data-table th:nth-child(7),
+.data-table th:nth-child(8),
+.data-table th:nth-child(9),
+.data-table th:nth-child(10) {
+  color: #333 !important;
+  font-weight: bold !important;
+  border: 1px solid #d7b87b !important;
+}
+
+/* 年月（黄緑） */
 .data-table th:nth-child(1) {
-  background-color: #c8e6c9; /* 🌿 緑系 (年月) */
+  background-color: #ccffcc !important;
 }
 
+/* 収入（黄色） */
 .data-table th:nth-child(2) {
-  background-color: #fff6a4; /* 収入（黄色） */
+  background-color: #fff6a4 !important;
 }
 
+/* 食事～その他（水色） */
 .data-table th:nth-child(3),
 .data-table th:nth-child(4),
 .data-table th:nth-child(5),
 .data-table th:nth-child(6),
 .data-table th:nth-child(7),
 .data-table th:nth-child(8) {
-  background-color: #cce5ff; /* 支出関連（水色） */
+  background-color: #cce5ff !important;
 }
 
+/* 支出合計（淡オレンジ） */
 .data-table th:nth-child(9) {
-  background-color: #ffe0b2; /* 収支（オレンジ系） */
-  color: #5d4037;
+  background-color: #ffecb3 !important;
+  color: #5d4037 !important;
+}
+
+/* 収支（オレンジ） */
+.data-table th:nth-child(10) {
+  background-color: #ffe0b2 !important;
+  color: #5d4037 !important;
 }
 
 .positive { color: #2e7d32; font-weight: bold; }

@@ -43,7 +43,7 @@ showBtn.addEventListener('click', async () => {
     return;
   }
 
-  // ✅ 支出合計計算
+  // ✅ 支出合計を算出
   const processed = data.map(row => {
     const expense =
       (row.meal_total || 0) +
@@ -65,7 +65,7 @@ showBtn.addEventListener('click', async () => {
     <span>年間収支額: <span style="color:${balance < 0 ? '#d32f2f' : '#2e7d32'};">${balance.toLocaleString()}円</span></span>
   `;
 
-  // ✅ テーブル生成
+  // ✅ テーブル生成（支出合計列を追加）
   const table = document.createElement('table');
   table.classList.add('data-table');
   table.innerHTML = `
@@ -79,6 +79,7 @@ showBtn.addEventListener('click', async () => {
         <th>生活費</th>
         <th>子供</th>
         <th>その他</th>
+        <th>支出合計</th>
         <th>収支</th>
       </tr>
     </thead>
@@ -96,6 +97,7 @@ showBtn.addEventListener('click', async () => {
             <td>${fmt(r.infra_total)}</td>
             <td>${fmt(r.education_total)}</td>
             <td>${fmt(r.others_total)}</td>
+            <td>${fmt(r.expense_total)}</td>
             <td class="${bal < 0 ? 'negative' : 'positive'}">${fmt(bal)}</td>
           </tr>
         `;
@@ -112,7 +114,7 @@ showBtn.addEventListener('click', async () => {
 
   if (chartInstance) chartInstance.destroy();
 
-  // ✅ グラフ生成（数値ラベル＋支出のラベル赤色）
+  // ✅ 折れ線グラフ（支出合計ベース）
   chartInstance = new Chart(chartCanvas, {
     type: 'line',
     data: {
@@ -151,11 +153,7 @@ showBtn.addEventListener('click', async () => {
         datalabels: {
           align: 'top',
           font: { size: 11, weight: 'bold' },
-          // ✅ データセットごとに色を変える
-          color: (ctx) => {
-            const dsLabel = ctx.dataset.label;
-            return dsLabel === '支出' ? '#d32f2f' : '#333';
-          },
+          color: (ctx) => ctx.dataset.label === '支出' ? '#d32f2f' : '#333',
           formatter: (value) => value ? value.toLocaleString() : ''
         }
       },
