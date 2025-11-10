@@ -4,6 +4,7 @@ const fileInput = document.getElementById('excelFile');
 const uploadBtn = document.getElementById('uploadBtn');
 const message = document.getElementById('message');
 
+
 const expectedHeaders = [
   '年月日', 'カテゴリ', '内容', '支払者', '収入', '食事', '生活用品', '遊び',
   '生活費', '子供', 'その他', '種別', '連番', 'カテゴリID', '支払者ID', '固定費フラグ'
@@ -40,6 +41,7 @@ function formatDateCell(value) {
  * Excelを読み込んで Supabase に一括登録（バリデーション付き）
  */
 uploadBtn.addEventListener('click', async () => {
+  message.innerHTML = `アップロード中<br>`;
   const file = fileInput.files[0];
   if (!file) {
     message.textContent = 'Excelファイルを選択してください。';
