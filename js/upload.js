@@ -141,6 +141,7 @@ uploadBtn.addEventListener('click', async () => {
       if (error) {
         console.error('Supabaseエラー詳細:', error);
         message.textContent = 'アップロード中にエラー: ' + error.message;
+        fileInput.value = "";
       } else {
         message.innerHTML = `✅ アップロード完了 (${upserted.length}件登録/更新)<br>`;
         fileInput.value = "";
