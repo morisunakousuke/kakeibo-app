@@ -161,6 +161,10 @@
   padding: 8px 12px;
   border-bottom: 1px solid #ccc;
   position: relative; /* ボタンを絶対位置で左側に置くため */
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
 }
 
 /* タイトル文字中央寄せ＆サイズ調整 */
@@ -336,6 +340,5 @@ td.zero-cell {
 #fixedTable td.zero-cell {
   background-color: #e0e0e0;
 }
-
 
 </style>
