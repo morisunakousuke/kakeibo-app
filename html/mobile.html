@@ -3,11 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <link rel="icon" type="image/png" href="../image/favicon.png">
-  <link rel="apple-touch-icon" href="../image/favicon.png">
-  <meta name="theme-color" content="#4caf50">
   <title>家計簿入力（スマホ版）</title>
-  <link rel="stylesheet" href="../css/mobile.css?v=20251106"">
+
+  <!-- ✅ PWA対応 -->
+  <link rel="manifest" href="/kakeibo-app/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
+  <link rel="apple-touch-icon" href="/kakeibo-app/icons/icon-192.png">
+  <link rel="icon" type="image/png" href="/kakeibo-app/image/favicon.png">
+
+  <!-- スタイル -->
+  <link rel="stylesheet" href="/kakeibo-app/css/mobile.css?v=20251106">
+
+  <!-- ✅ Service Worker 登録 -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/kakeibo-app/service-worker.js')
+          .then(() => console.log('✅ Service Worker registered (mobile)'))
+          .catch(err => console.log('❌ Service Worker failed (mobile)', err));
+      });
+    }
+  </script>
 </head>
 
 <body>
