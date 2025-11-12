@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
   <meta charset="UTF-8">
   <title>家計簿</title>
-  <link rel="icon" type="image/png" href="./image/favicon.png">
-  <link rel="apple-touch-icon" href="./image/favicon.png">
-  <link rel="stylesheet" href="css/index.css">
-  <!-- アイコン -->
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="icon" sizes="192x192" href="icons/icon-192.png">
-  
+
+  <!-- favicon & PWAアイコン -->
+  <link rel="icon" type="image/png" href="/kakeibo-app/image/favicon.png">
+  <link rel="apple-touch-icon" href="/kakeibo-app/icons/icon-192.png">
+  <link rel="manifest" href="/kakeibo-app/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
+
+  <link rel="stylesheet" href="/kakeibo-app/css/index.css">
+
   <script>
-    // スマホ判定（幅600px未満なら /html/mobile.html に遷移）
+    // スマホ判定
     const ua = navigator.userAgent.toLowerCase();
     const isMobile = /iphone|ipod|ipad|android/.test(ua) || window.innerWidth < 600;
     if (isMobile) {
-      window.location.href = "./html/mobile.html?v=" + Date.now(); // キャッシュ無効化
+      window.location.href = "/kakeibo-app/html/mobile.html?v=" + Date.now();
     }
-    
+
+    // Service Worker登録
     if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('✅ Service Worker registered'))
-        .catch(err => console.log('❌ Service Worker failed', err));
-    });
-  }
-    
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/kakeibo-app/service-worker.js')
+          .then(() => console.log('✅ Service Worker registered'))
+          .catch(err => console.log('❌ Service Worker failed', err));
+      });
+    }
   </script>
 </head>
 
