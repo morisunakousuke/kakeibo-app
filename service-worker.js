@@ -1,13 +1,11 @@
-// service-worker.js
-
 const CACHE_NAME = 'kakeibo-cache-v1';
 const urlsToCache = [
-  './',
-  './index.html',
-  './style.css',
-  './index.js',
-  './common.js',
-  './manifest.json'
+  '/kakeibo-app/',
+  '/kakeibo-app/index.html',
+  '/kakeibo-app/css/index.css',
+  '/kakeibo-app/js/index.js',
+  '/kakeibo-app/js/common.js',
+  '/kakeibo-app/manifest.json'
 ];
 
 // インストール時にキャッシュ
