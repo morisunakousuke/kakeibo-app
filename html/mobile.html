@@ -3,11 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <link rel="icon" type="image/png" href="../image/favicon.png">
-  <link rel="apple-touch-icon" href="../image/favicon.png">
-  <link rel="stylesheet" href="../css/mobile.css">
-  <title>家計簿入力</title>
 
+  <!-- favicon & PWA -->
+  <link rel="icon" type="image/png" href="/kakeibo-app/image/favicon.png">
+  <link rel="apple-touch-icon" href="/kakeibo-app/icons/icon-192.png">
+  <link rel="manifest" href="/kakeibo-app/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/kakeibo-app/css/mobile.css">
+
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/kakeibo-app/service-worker.js')
+          .then(() => console.log('✅ Service Worker registered for mobile'))
+          .catch(err => console.error('❌ SW registration failed:', err));
+      });
+    }
+  </script>
+
+  <title>家計簿入力</title>
 </head>
 
 <body>
