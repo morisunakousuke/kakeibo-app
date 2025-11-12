@@ -1,11 +1,9 @@
 // ============================
-// ✅ 最新反映対応 Service Worker
+// ✅ 最新反映対応 Service Worker（cloneエラー対策版）
 // ============================
 
-// キャッシュ名にバージョンを付けて管理（更新時はここを変える）
-const CACHE_NAME = 'kakeibo-cache-v2';
+const CACHE_NAME = 'kakeibo-cache-v3';
 
-// キャッシュするファイル一覧
 const urlsToCache = [
   '/kakeibo-app/',
   '/kakeibo-app/index.html',
@@ -16,7 +14,7 @@ const urlsToCache = [
 ];
 
 // ============================
-// 🔹 install: キャッシュ登録 & 即時有効化
+// install: キャッシュ登録 & 即時有効化
 // ============================
 self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing new version...');
@@ -27,39 +25,45 @@ self.addEventListener('install', (event) => {
 });
 
 // ============================
-// 🔹 activate: 古いキャッシュ削除 & クライアント更新
+// activate: 古いキャッシュ削除 & クライアント更新
 // ============================
 self.addEventListener('activate', (event) => {
   console.log('[Service Worker] Activated new version');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
+    caches.keys().then((cacheNames) =>
+      Promise.all(
         cacheNames
           .filter((name) => name !== CACHE_NAME)
           .map((oldName) => caches.delete(oldName))
-      );
-    })
+      )
+    )
   );
-  event.waitUntil(clients.claim()); // ✅ 開いている全タブに即時反映
+  event.waitUntil(clients.claim());
 });
 
 // ============================
-// 🔹 fetch: キャッシュ優先 + ネット更新
+// fetch: キャッシュ優先 + ネット更新
 // ============================
 self.addEventListener('fetch', (event) => {
+  // POSTやPUTなどはキャッシュしない
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
+      // ネットワークから取得
       const fetchPromise = fetch(event.request)
         .then((networkResponse) => {
-          // キャッシュ更新（GETのみ）
-          if (event.request.method === 'GET' && networkResponse.ok) {
+          if (networkResponse && networkResponse.ok) {
+            const responseClone = networkResponse.clone(); // ✅ cloneはここで安全に実施
             caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, networkResponse.clone());
+              cache.put(event.request, responseClone);
             });
           }
           return networkResponse;
         })
-        .catch(() => cachedResponse); // オフライン時はキャッシュ返却
+        .catch(() => cachedResponse); // オフライン時はキャッシュを返す
+
+      // キャッシュがあれば即返す、なければネットワーク
       return cachedResponse || fetchPromise;
     })
   );
