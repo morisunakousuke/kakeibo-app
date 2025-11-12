@@ -140,3 +140,38 @@ h1 {
 .back-button:hover {
   background-color: #666;
 }
+
+/* === 📱 スマホ表示最適化 === */
+@media (max-width: 600px) {
+  #filter-box {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  #filter-box .field {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  #filter-box .field label {
+    flex: 0 0 40%;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  #filter-box .field input,
+  #filter-box .field select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  #filter-box .filter-button {
+    align-self: center;
+    width: 80%;
+    font-size: 15px;
+    padding: 10px;
+  }
+}
