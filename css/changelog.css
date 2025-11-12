@@ -1,3 +1,4 @@
+/* 共通デザイン */
 body {
   font-family: sans-serif;
   background-color: #f9f9f9;
@@ -8,6 +9,13 @@ body {
 h1 {
   text-align: center;
   color: #333;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+/* 表全体をスクロール可能に */
+.table-wrapper {
+  overflow-x: auto;
 }
 
 table {
@@ -15,26 +23,31 @@ table {
   border-collapse: collapse;
   background-color: #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  min-width: 400px; /* 横幅の狭いスマホで横スクロール発生 */
 }
 
 th, td {
   border-bottom: 1px solid #ddd;
   padding: 10px;
   text-align: left;
+  font-size: 14px;
 }
 
 th {
   background-color: #4CAF50;
   color: white;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 tr:hover {
   background-color: #f1f1f1;
 }
 
-/* ✅ 戻るボタンを中央配置 */
+/* 戻るボタン */
 .back-button-container {
   text-align: center;
   margin-top: 20px;
@@ -45,13 +58,34 @@ tr:hover {
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
+  padding: 10px 20px;
+  font-size: 16px;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   transition: background-color 0.2s ease;
 }
 
 .back-button:hover {
   background-color: #666;
+}
+
+/* 📱 スマホ向け調整 */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 18px;
+  }
+
+  th, td {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .back-button {
+    width: 100%;
+    font-size: 15px;
+  }
 }
