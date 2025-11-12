@@ -126,9 +126,9 @@ function renderTable(data, year) {
   tableBody.appendChild(avgRow);
 
   summaryBox.innerHTML = `
-    <div style="margin-top:15px; font-weight:bold; font-size:16px;">
-      年間生活費合計：${formatNum(sums.total)}円　
-      年間生活費平均（月あたり）：${formatNum(Math.round(avgs.total))}円
+    <div class="summary-text">
+      <div>年間生活費合計：${formatNum(sums.total)}円</div>
+      <div>年間生活費平均（月あたり）：${formatNum(Math.round(avgs.total))}円</div>
     </div>
   `;
 }
