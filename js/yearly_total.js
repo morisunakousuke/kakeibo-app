@@ -61,6 +61,7 @@ showBtn.addEventListener('click', async () => {
   const balance = totalIncome - totalExpense;
 
   summaryBox.innerHTML = `
+    <span>年間収入合計: ${totalIncome.toLocaleString()}円</span>
     <span>年間支出合計: ${totalExpense.toLocaleString()}円</span>
     <span>年間収支額: <span style="color:${balance < 0 ? '#d32f2f' : '#2e7d32'};">${balance.toLocaleString()}円</span></span>
   `;
