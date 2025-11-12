@@ -1,8 +1,8 @@
 // ============================
-// ✅ 安定版 Service Worker（clone & addAll エラー修正版）
+// ✅ 安定版 Service Worker（chrome-extension 除外対応）
 // ============================
 
-const CACHE_NAME = 'kakeibo-cache-v5'; // ← バージョン更新で旧キャッシュ削除
+const CACHE_NAME = 'kakeibo-cache-v6'; // ← バージョン更新で旧キャッシュ削除
 const CACHE_FILES = [
   '/kakeibo-app/',
   '/kakeibo-app/index.html',
@@ -26,6 +26,12 @@ self.addEventListener('install', (event) => {
     (async () => {
       const cache = await caches.open(CACHE_NAME);
       for (const url of CACHE_FILES) {
+        // 🔸 chrome-extension スキームを除外
+        if (url.startsWith('chrome-extension://')) {
+          console.warn('[Service Worker] Skip caching (extension):', url);
+          continue;
+        }
+
         try {
           const response = await fetch(url);
           if (response.ok) {
@@ -37,7 +43,7 @@ self.addEventListener('install', (event) => {
           console.warn(`[Service Worker] Failed to cache ${url}:`, err);
         }
       }
-      self.skipWaiting(); // ✅ 新SWを即有効化
+      self.skipWaiting();
     })()
   );
 });
@@ -61,12 +67,18 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  const url = event.request.url;
+  // 🔸 拡張機能URLは完全スキップ
+  if (url.startsWith('chrome-extension://')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const networkFetch = fetch(event.request)
         .then((response) => {
-          if (response && response.ok) {
-            const cloned = response.clone(); // ✅ clone はここで安全に
+          if (response && response.ok && !url.startsWith('chrome-extension://')) {
+            const cloned = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cloned));
           }
           return response;
