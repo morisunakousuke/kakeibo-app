@@ -1,18 +1,19 @@
 {
   "name": "家計簿アプリ",
   "short_name": "家計簿",
-  "start_url": "./index.html",
+  "start_url": "/kakeibo-app/index.html",
+  "scope": "/kakeibo-app/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#2c3e50",
   "theme_color": "#2c3e50",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "/kakeibo-app/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "/kakeibo-app/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
