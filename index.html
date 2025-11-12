@@ -6,6 +6,10 @@
   <link rel="icon" type="image/png" href="./image/favicon.png">
   <link rel="apple-touch-icon" href="./image/favicon.png">
   <link rel="stylesheet" href="css/index.css">
+  <!-- アイコン -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" sizes="192x192" href="icons/icon-192.png">
+  
   <script>
     // スマホ判定（幅600px未満なら /html/mobile.html に遷移）
     const ua = navigator.userAgent.toLowerCase();
@@ -13,6 +17,15 @@
     if (isMobile) {
       window.location.href = "./html/mobile.html?v=" + Date.now(); // キャッシュ無効化
     }
+    
+    if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('✅ Service Worker registered'))
+        .catch(err => console.log('❌ Service Worker failed', err));
+    });
+  }
+    
   </script>
 </head>
 
