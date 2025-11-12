@@ -1,16 +1,21 @@
 // ============================
-// ✅ 最新反映対応 Service Worker（cloneエラー対策版）
+// ✅ 本番用 Service Worker（インストール再有効化＋cloneエラー対策）
 // ============================
 
-const CACHE_NAME = 'kakeibo-cache-v3';
+const CACHE_NAME = 'kakeibo-cache-v4'; // ← バージョン更新で強制更新
 
 const urlsToCache = [
   '/kakeibo-app/',
   '/kakeibo-app/index.html',
-  '/kakeibo-app/css/index.css',
-  '/kakeibo-app/js/index.js',
-  '/kakeibo-app/js/common.js',
+  '/kakeibo-app/mobile.html',
+  '/kakeibo-app/index.css',
+  '/kakeibo-app/mobile.css',
+  '/kakeibo-app/index.js',
+  '/kakeibo-app/mobile.js',
+  '/kakeibo-app/common.js',
   '/kakeibo-app/manifest.json',
+  '/kakeibo-app/icons/icon-192.png',
+  '/kakeibo-app/icons/icon-512.png',
 ];
 
 // ============================
@@ -21,7 +26,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
   );
-  self.skipWaiting(); // ✅ 新バージョンを即座に有効化
+  self.skipWaiting(); // ✅ 新バージョンを即時適用
 });
 
 // ============================
@@ -45,25 +50,21 @@ self.addEventListener('activate', (event) => {
 // fetch: キャッシュ優先 + ネット更新
 // ============================
 self.addEventListener('fetch', (event) => {
-  // POSTやPUTなどはキャッシュしない
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      // ネットワークから取得
       const fetchPromise = fetch(event.request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.ok) {
-            const responseClone = networkResponse.clone(); // ✅ cloneはここで安全に実施
+            const cloned = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone);
+              cache.put(event.request, cloned);
             });
           }
           return networkResponse;
         })
-        .catch(() => cachedResponse); // オフライン時はキャッシュを返す
-
-      // キャッシュがあれば即返す、なければネットワーク
+        .catch(() => cachedResponse);
       return cachedResponse || fetchPromise;
     })
   );
