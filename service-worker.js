@@ -2,7 +2,7 @@
 // ✅ 安定版 Service Worker（chrome-extension 除外対応）
 // ============================
 
-const CACHE_NAME = 'kakeibo-cache-v6'; // ← バージョン更新で旧キャッシュ削除
+const CACHE_NAME = 'kakeibo-cache-v7'; // ← バージョン更新で旧キャッシュ削除
 const CACHE_FILES = [
   '/kakeibo-app/',
   '/kakeibo-app/index.html',
