@@ -307,4 +307,35 @@
       background-color: #757575;   /* 濃いめグレー */
 }
 
+/* ▼ 固定費・変動費テーブルスクロール＋固定ヘッダー */
+.table-scroll-x {
+  position: relative;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll-x table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.table-scroll-x thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f0f0f0;
+  z-index: 2;
+}
+
+/* ▼ 0円セルの表示制御 */
+td.zero-cell {
+  color: transparent;
+}
+#fixedTable td.zero-cell {
+  background-color: #e0e0e0;
+}
+
+
 </style>

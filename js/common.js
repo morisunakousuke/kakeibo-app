@@ -236,6 +236,7 @@ export function renderKakeiList(selector, data, formatNum) {
   data.forEach(r => {
     const tr = document.createElement('tr');
 
+    // ✅ チェックボックス列を保持
     tr.innerHTML = `
       <td><input type="checkbox" class="row-check" data-date="${r.date}" data-seq="${r.seq}"></td>
       <td>${r.date ? r.date.slice(5) : ''}</td>
@@ -251,19 +252,22 @@ export function renderKakeiList(selector, data, formatNum) {
       <td class="numcell">${formatNum(r.others)}</td>
     `;
 
-    // 固定費表(#koteiTable)なら、空欄セルをグレーにする
-    if (selector === '#koteiTable tbody') {
-      tr.querySelectorAll('.numcell').forEach(td => {
-        if (!td.textContent || td.textContent === '0') {
+    // ✅ 0円セルを空欄化（固定費表だけグレーアウト）
+    tr.querySelectorAll('.numcell').forEach(td => {
+      const val = td.textContent.replace(/,/g, '').trim();
+      if (val === '' || val === '0') {
+        td.textContent = '';
+        if (selector === '#koteiTable tbody') {
           td.style.backgroundColor = '#f0f0f0';
           td.style.color = '#888';
         }
-      });
-    }
+      }
+    });
 
     tbody.appendChild(tr);
   });
 }
+
 
 // ==============================
 // 🔸 個人負担表描画
