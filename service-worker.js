@@ -1,18 +1,17 @@
 // ============================
-// ✅ 本番用 Service Worker（インストール再有効化＋cloneエラー対策）
+// ✅ 安定版 Service Worker（clone & addAll エラー修正版）
 // ============================
 
-const CACHE_NAME = 'kakeibo-cache-v4'; // ← バージョン更新で強制更新
-
-const urlsToCache = [
+const CACHE_NAME = 'kakeibo-cache-v5'; // ← バージョン更新で旧キャッシュ削除
+const CACHE_FILES = [
   '/kakeibo-app/',
   '/kakeibo-app/index.html',
   '/kakeibo-app/mobile.html',
-  '/kakeibo-app/index.css',
-  '/kakeibo-app/mobile.css',
-  '/kakeibo-app/index.js',
-  '/kakeibo-app/mobile.js',
-  '/kakeibo-app/common.js',
+  '/kakeibo-app/css/index.css',
+  '/kakeibo-app/css/mobile.css',
+  '/kakeibo-app/js/index.js',
+  '/kakeibo-app/js/mobile.js',
+  '/kakeibo-app/js/common.js',
   '/kakeibo-app/manifest.json',
   '/kakeibo-app/icons/icon-192.png',
   '/kakeibo-app/icons/icon-512.png',
@@ -24,9 +23,23 @@ const urlsToCache = [
 self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing new version...');
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      for (const url of CACHE_FILES) {
+        try {
+          const response = await fetch(url);
+          if (response.ok) {
+            await cache.put(url, response.clone());
+          } else {
+            console.warn(`[Service Worker] Skip caching (not ok): ${url}`);
+          }
+        } catch (err) {
+          console.warn(`[Service Worker] Failed to cache ${url}:`, err);
+        }
+      }
+      self.skipWaiting(); // ✅ 新SWを即有効化
+    })()
   );
-  self.skipWaiting(); // ✅ 新バージョンを即時適用
 });
 
 // ============================
@@ -35,12 +48,8 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   console.log('[Service Worker] Activated new version');
   event.waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((oldName) => caches.delete(oldName))
-      )
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((key) => key !== CACHE_NAME && caches.delete(key)))
     )
   );
   event.waitUntil(clients.claim());
@@ -53,19 +62,17 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.ok) {
-            const cloned = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, cloned);
-            });
+    caches.match(event.request).then((cached) => {
+      const networkFetch = fetch(event.request)
+        .then((response) => {
+          if (response && response.ok) {
+            const cloned = response.clone(); // ✅ clone はここで安全に
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cloned));
           }
-          return networkResponse;
+          return response;
         })
-        .catch(() => cachedResponse);
-      return cachedResponse || fetchPromise;
+        .catch(() => cached);
+      return cached || networkFetch;
     })
   );
 });
