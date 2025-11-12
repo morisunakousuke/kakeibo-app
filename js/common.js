@@ -257,7 +257,7 @@ export function renderKakeiList(selector, data, formatNum) {
       const val = td.textContent.replace(/,/g, '').trim();
       if (val === '' || val === '0') {
         td.textContent = '';
-        if (selector === '#koteiTable tbody') {
+        if (selector === '#koteiTable tbody' || selector === '#fixedTable tbody') {
           td.style.backgroundColor = '#f0f0f0';
           td.style.color = '#888';
         }
