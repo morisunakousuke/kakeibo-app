@@ -123,27 +123,28 @@
   </div>
 
   <!-- 変動費 -->
-  <div class="table-scroll-x">
-    <div class="table-header">
-      <h3>変動費</h3>
-      <div class="action-buttons">
-        <button id="editVariable">編集</button>
-        <button id="deleteVariable">削除</button>
-      </div>
-    </div>
-    <div class="table-scroll-x">
-      <table id="variableTable">
-        <thead>
-          <tr>
-            <th>選択</th><th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
-            <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
-            <th>生活費</th><th>教育</th><th>その他</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+<div class="table-section">
+  <div class="table-header sticky-header">
+    <h3>変動費</h3>
+    <div class="action-buttons">
+      <button id="editVariable">編集</button>
+      <button id="deleteVariable">削除</button>
     </div>
   </div>
+
+  <div class="table-scroll-x">
+    <table id="variableTable">
+      <thead>
+        <tr>
+          <th>選択</th><th>日付</th><th>カテゴリ</th><th>内容</th><th>支払者</th>
+          <th>収入</th><th>食費</th><th>生活用品</th><th>娯楽</th>
+          <th>生活費</th><th>教育</th><th>その他</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
 
   <script type="module" src="../js/mobile.js"></script>
 </body>
