@@ -61,6 +61,7 @@ button[type="submit"]:hover {
   background-color: #45a049;
 }
 
+/* ====== 変動費／固定費切り替え ====== */
 .cost-toggle {
   display: flex;
   justify-content: center;
@@ -127,11 +128,14 @@ table {
   text-align: center;
   font-size: 13px;
   background-color: #fff;
+  table-layout: auto; /* ✅ 自動幅にして狭くなりすぎないように */
 }
 
 th, td {
   border: 1px solid #ccc;
   padding: 6px;
+  white-space: nowrap; /* ✅ 折り返さず横スクロール許可 */
+  word-break: keep-all;
 }
 
 th {
@@ -210,7 +214,7 @@ th {
   background-color: #e53935;
 }
 
-/* ====== ▼ スクロールエリア（固定費・変動費） ====== */
+/* ====== ▼ スクロールエリア（固定費・変動費・合計表） ====== */
 .table-scroll-x {
   max-height: 400px;
   overflow-y: auto;
@@ -219,6 +223,13 @@ th {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ✅ テーブルの最低幅を設定して潰れ防止 */
+#totalTable,
+#fixedTable,
+#variableTable {
+  min-width: 950px; /* ←必要に応じて調整 */
 }
 
 .table-scroll-x table {
@@ -307,4 +318,18 @@ td.zero-cell {
 }
 #fixedTable td.zero-cell {
   background-color: #e0e0e0;
+}
+
+/* ====== ▼ スマホ調整 ====== */
+@media (max-width: 600px) {
+  th, td {
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  #totalTable,
+  #fixedTable,
+  #variableTable {
+    min-width: 750px; /* 小画面用に調整 */
+  }
 }
