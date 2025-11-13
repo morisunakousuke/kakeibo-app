@@ -47,20 +47,18 @@ async function loadYearlyData() {
     }
 
     renderSummary(data, year);
-    renderTable(data, year);
+    renderTable(data);
     renderChart(data, year);
   } catch (err) {
     console.error('データ取得エラー:', err);
   }
 }
 
-// 年間サマリ計算
 function renderSummary(data, year) {
-  const totalIncome = data.reduce((sum, d) => sum + (d.income || 0), 0);
-  const totalExpense = data.reduce((sum, d) => {
-    return sum + (d.meal || 0) + (d.supplies || 0) + (d.play || 0) +
-           (d.infra || 0) + (d.education || 0) + (d.others || 0);
-  }, 0);
+  const totalIncome = data.reduce((s, d) => s + (d.income || 0), 0);
+  const totalExpense = data.reduce((s, d) =>
+    s + (d.meal || 0) + (d.supplies || 0) + (d.play || 0) + (d.infra || 0) + (d.education || 0) + (d.others || 0)
+  , 0);
   const balance = totalIncome - totalExpense;
 
   summaryBox.innerHTML = `
@@ -70,8 +68,7 @@ function renderSummary(data, year) {
   `;
 }
 
-// 表レンダリング
-function renderTable(data, year) {
+function renderTable(data) {
   const monthly = {};
   for (let i = 1; i <= 12; i++) {
     monthly[i] = { income: 0, meal: 0, supplies: 0, play: 0, infra: 0, education: 0, others: 0 };
@@ -94,7 +91,6 @@ function renderTable(data, year) {
   Object.entries(monthly).forEach(([month, val]) => {
     const exp = val.meal + val.supplies + val.play + val.infra + val.education + val.others;
     const balance = val.income - exp;
-
     totalIncome += val.income;
     totalExpense += exp;
 
@@ -114,7 +110,6 @@ function renderTable(data, year) {
     tableBody.appendChild(row);
   });
 
-  // 合計行
   const totalBalance = totalIncome - totalExpense;
   const totalRow = document.createElement('tr');
   totalRow.innerHTML = `
@@ -127,7 +122,7 @@ function renderTable(data, year) {
   tableBody.appendChild(totalRow);
 }
 
-// 折れ線グラフ描画
+// 折れ線グラフ
 function renderChart(data, year) {
   const ctx = document.getElementById('yearlyChart').getContext('2d');
   const monthlyIncome = Array(12).fill(0);
@@ -152,8 +147,9 @@ function renderChart(data, year) {
           data: monthlyIncome,
           borderColor: '#43a047',
           backgroundColor: 'rgba(67,160,71,0.2)',
+          borderWidth: 3,
           fill: true,
-          tension: 0.3,
+          tension: 0.35,
           pointRadius: 4
         },
         {
@@ -161,8 +157,9 @@ function renderChart(data, year) {
           data: monthlyExpense,
           borderColor: '#e53935',
           backgroundColor: 'rgba(229,57,53,0.2)',
+          borderWidth: 3,
           fill: true,
-          tension: 0.3,
+          tension: 0.35,
           pointRadius: 4
         }
       ]
@@ -175,7 +172,7 @@ function renderChart(data, year) {
           display: true,
           text: `${year}年 月別収入・支出推移`,
           font: { size: window.innerWidth < 600 ? 14 : 18 },
-          padding: { top: 10, bottom: 15 }
+          padding: { top: 10, bottom: 20 }
         },
         legend: {
           position: window.innerWidth < 600 ? 'top' : 'bottom',
@@ -185,27 +182,29 @@ function renderChart(data, year) {
           }
         },
         datalabels: {
+          display: window.innerWidth > 600, // ✅ スマホでは非表示に
           align: 'top',
-          font: { size: window.innerWidth < 600 ? 9 : 11, weight: 'bold' },
-          color: ctx => ctx.dataset.label === '支出' ? '#d32f2f' : '#333',
-          formatter: value => value ? value.toLocaleString() : ''
+          font: { size: 10, weight: 'bold' },
+          color: ctx => ctx.dataset.label === '支出' ? '#d32f2f' : '#2e7d32',
+          formatter: val => val > 0 ? (val / 1000).toFixed(0) + 'k' : ''
         }
       },
-      layout: {
-        padding: { left: 10, right: 10, top: 20, bottom: 10 }
-      },
+      layout: { padding: { left: 10, right: 10, top: 20, bottom: 10 } },
       scales: {
         x: {
           ticks: {
-            font: { size: window.innerWidth < 600 ? 10 : 12 }
-          }
+            font: { size: window.innerWidth < 600 ? 10 : 12 },
+            callback: (v, i) => (i % 2 === 0 ? v : '') // ✅ 2ヶ月おき表示
+          },
+          grid: { display: false }
         },
         y: {
           beginAtZero: true,
           ticks: {
-            callback: val => val.toLocaleString() + '円',
+            callback: val => val >= 100000 ? (val / 1000) + 'k' : val,
             font: { size: window.innerWidth < 600 ? 10 : 12 }
-          }
+          },
+          grid: { color: 'rgba(0,0,0,0.05)' }
         }
       }
     },
