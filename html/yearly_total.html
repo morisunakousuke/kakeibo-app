@@ -35,7 +35,26 @@
     <canvas id="yearlyChart"></canvas>
   </div>
 
-  <div id="tableContainer"></div>
+  <!-- ✅ ここを追加 -->
+  <div id="tableContainer">
+    <table id="yearlyTable" class="data-table">
+      <thead>
+        <tr>
+          <th>月</th>
+          <th>収入</th>
+          <th>食費</th>
+          <th>生活用品</th>
+          <th>娯楽</th>
+          <th>インフラ</th>
+          <th>教育</th>
+          <th>その他</th>
+          <th>支出合計</th>
+          <th>収支</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
   <button id="backBtn" onclick="location.href='./AdministratorMenu.html'">戻る</button>
 </body>
