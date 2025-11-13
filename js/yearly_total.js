@@ -6,6 +6,7 @@ const nextYearBtn = document.getElementById('nextYearBtn');
 const yearSelect = document.getElementById('yearSelect');
 const summaryBox = document.getElementById('summaryBox');
 const tableBody = document.querySelector('#yearlyTable tbody');
+const chartContainer = document.getElementById('chartContainer');
 let chart = null;
 
 // 初期表示
@@ -15,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
   loadYearlyData();
 });
 
-// イベント設定
 showBtn.addEventListener('click', loadYearlyData);
 prevYearBtn.addEventListener('click', () => {
   yearSelect.value = Number(yearSelect.value) - 1;
@@ -26,7 +26,7 @@ nextYearBtn.addEventListener('click', () => {
   loadYearlyData();
 });
 
-// データ読込メイン処理
+// === データ取得 ===
 async function loadYearlyData() {
   const year = yearSelect.value;
 
@@ -42,57 +42,81 @@ async function loadYearlyData() {
     if (!data || data.length === 0) {
       summaryBox.innerHTML = `<div>データがありません</div>`;
       tableBody.innerHTML = '';
-      if (chart) chart.destroy();
+      chartContainer.innerHTML = '';
       return;
     }
 
-    renderSummary(data, year);
+    renderSummary(data);
     renderTable(data);
-    renderChart(data, year);
+    renderChartOne(data, year);
+
   } catch (err) {
     console.error('データ取得エラー:', err);
   }
 }
 
-function renderSummary(data, year) {
+// === 年間サマリー ===
+function renderSummary(data) {
   const totalIncome = data.reduce((s, d) => s + (d.income || 0), 0);
-  const totalExpense = data.reduce((s, d) =>
-    s + (d.meal || 0) + (d.supplies || 0) + (d.play || 0) + (d.infra || 0) + (d.education || 0) + (d.others || 0)
-  , 0);
+  const totalExpense = data.reduce(
+    (s, d) =>
+      s +
+      (d.meal || 0) +
+      (d.supplies || 0) +
+      (d.play || 0) +
+      (d.infra || 0) +
+      (d.education || 0) +
+      (d.others || 0),
+    0
+  );
   const balance = totalIncome - totalExpense;
 
   summaryBox.innerHTML = `
-    <div>年間収入合計：${formatNum(totalIncome)}円</div>
-    <div>年間支出合計：${formatNum(totalExpense)}円</div>
-    <div>年間収支：<span class="${balance >= 0 ? 'positive' : 'negative'}">${formatNum(balance)}円</span></div>
+    <div class="summary-text">
+      <div>年間収入合計：${formatNum(totalIncome)}円</div>
+      <div>年間支出合計：${formatNum(totalExpense)}円</div>
+      <div>年間収支：<span class="${balance >= 0 ? 'positive' : 'negative'}">${formatNum(balance)}円</span></div>
+    </div>
   `;
 }
 
+// === 表の作成 ===
 function renderTable(data) {
   const monthly = {};
   for (let i = 1; i <= 12; i++) {
-    monthly[i] = { income: 0, meal: 0, supplies: 0, play: 0, infra: 0, education: 0, others: 0 };
+    monthly[i] = {
+      income: 0,
+      meal: 0,
+      supplies: 0,
+      play: 0,
+      infra: 0,
+      education: 0,
+      others: 0
+    };
   }
 
-  data.forEach(row => {
-    const month = new Date(row.date).getMonth() + 1;
-    monthly[month].income += row.income || 0;
-    monthly[month].meal += row.meal || 0;
-    monthly[month].supplies += row.supplies || 0;
-    monthly[month].play += row.play || 0;
-    monthly[month].infra += row.infra || 0;
-    monthly[month].education += row.education || 0;
-    monthly[month].others += row.others || 0;
+  data.forEach((row) => {
+    const m = new Date(row.date).getMonth() + 1;
+    monthly[m].income += row.income || 0;
+    monthly[m].meal += row.meal || 0;
+    monthly[m].supplies += row.supplies || 0;
+    monthly[m].play += row.play || 0;
+    monthly[m].infra += row.infra || 0;
+    monthly[m].education += row.education || 0;
+    monthly[m].others += row.others || 0;
   });
 
   tableBody.innerHTML = '';
-  let totalIncome = 0, totalExpense = 0;
-
   Object.entries(monthly).forEach(([month, val]) => {
-    const exp = val.meal + val.supplies + val.play + val.infra + val.education + val.others;
+    const exp =
+      val.meal +
+      val.supplies +
+      val.play +
+      val.infra +
+      val.education +
+      val.others;
+
     const balance = val.income - exp;
-    totalIncome += val.income;
-    totalExpense += exp;
 
     const row = document.createElement('tr');
     row.innerHTML = `
@@ -109,105 +133,86 @@ function renderTable(data) {
     `;
     tableBody.appendChild(row);
   });
-
-  const totalBalance = totalIncome - totalExpense;
-  const totalRow = document.createElement('tr');
-  totalRow.innerHTML = `
-    <th>合計</th>
-    <th>${formatNum(totalIncome)}</th>
-    <th colspan="6"></th>
-    <th>${formatNum(totalExpense)}</th>
-    <th class="${totalBalance >= 0 ? 'positive' : 'negative'}">${formatNum(totalBalance)}</th>
-  `;
-  tableBody.appendChild(totalRow);
 }
 
-// 折れ線グラフ
-function renderChart(data, year) {
-  const ctx = document.getElementById('yearlyChart').getContext('2d');
-  const monthlyIncome = Array(12).fill(0);
-  const monthlyExpense = Array(12).fill(0);
+// === 生活費合計表と同デザインの折れ線グラフ（収入＋支出 1グラフ） ===
+function renderChartOne(data, year) {
+  chartContainer.innerHTML = '';
 
-  data.forEach(row => {
+  // カードブロック1つだけ
+  const block = document.createElement('div');
+  block.className = 'chart-block';
+  block.innerHTML = `
+    <h3>${year}年 月別収入・支出推移</h3>
+    <canvas id="yearlyChart"></canvas>
+  `;
+  chartContainer.appendChild(block);
+
+  const monthly = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    income: 0,
+    expense: 0
+  }));
+
+  data.forEach((row) => {
     const m = new Date(row.date).getMonth();
-    monthlyIncome[m] += row.income || 0;
-    monthlyExpense[m] += (row.meal || 0) + (row.supplies || 0) + (row.play || 0) +
-                         (row.infra || 0) + (row.education || 0) + (row.others || 0);
+    monthly[m].income += row.income || 0;
+    monthly[m].expense +=
+      (row.meal || 0) +
+      (row.supplies || 0) +
+      (row.play || 0) +
+      (row.infra || 0) +
+      (row.education || 0) +
+      (row.others || 0);
   });
+
+  const ctx = document.getElementById('yearlyChart').getContext('2d');
 
   if (chart) chart.destroy();
 
   chart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+      labels: monthly.map((m) => `${m.month}月`),
       datasets: [
         {
           label: '収入',
-          data: monthlyIncome,
-          borderColor: '#43a047',
+          data: monthly.map((m) => m.income),
+          borderColor: 'rgba(67,160,71,0.9)',
           backgroundColor: 'rgba(67,160,71,0.2)',
-          borderWidth: 3,
           fill: true,
-          tension: 0.35,
-          pointRadius: 4
+          tension: 0.2,
+          borderWidth: 2,
+          pointRadius: 3
         },
         {
           label: '支出',
-          data: monthlyExpense,
-          borderColor: '#e53935',
+          data: monthly.map((m) => m.expense),
+          borderColor: 'rgba(229,57,53,0.9)',
           backgroundColor: 'rgba(229,57,53,0.2)',
-          borderWidth: 3,
           fill: true,
-          tension: 0.35,
-          pointRadius: 4
+          tension: 0.2,
+          borderWidth: 2,
+          pointRadius: 3
         }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      aspectRatio: 2,
       plugins: {
-        title: {
-          display: true,
-          text: `${year}年 月別収入・支出推移`,
-          font: { size: window.innerWidth < 600 ? 14 : 18 },
-          padding: { top: 10, bottom: 20 }
-        },
-        legend: {
-          position: window.innerWidth < 600 ? 'top' : 'bottom',
-          labels: {
-            boxWidth: 12,
-            font: { size: window.innerWidth < 600 ? 11 : 13 }
-          }
-        },
-        datalabels: {
-          display: window.innerWidth > 600, // ✅ スマホでは非表示に
-          align: 'top',
-          font: { size: 10, weight: 'bold' },
-          color: ctx => ctx.dataset.label === '支出' ? '#d32f2f' : '#2e7d32',
-          formatter: val => val > 0 ? (val / 1000).toFixed(0) + 'k' : ''
-        }
+        legend: { position: 'top' },
+        title: { display: false }
       },
-      layout: { padding: { left: 10, right: 10, top: 20, bottom: 10 } },
       scales: {
-        x: {
-          ticks: {
-            font: { size: window.innerWidth < 600 ? 10 : 12 },
-            callback: (v, i) => (i % 2 === 0 ? v : '') // ✅ 2ヶ月おき表示
-          },
-          grid: { display: false }
-        },
         y: {
           beginAtZero: true,
           ticks: {
-            callback: val => val >= 100000 ? (val / 1000) + 'k' : val,
-            font: { size: window.innerWidth < 600 ? 10 : 12 }
-          },
-          grid: { color: 'rgba(0,0,0,0.05)' }
+            callback: (v) => v.toLocaleString() + '円'
+          }
         }
       }
-    },
-    plugins: [ChartDataLabels]
+    }
   });
 }
