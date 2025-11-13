@@ -41,10 +41,33 @@ body { text-align: center; }
 .summary-box span { margin: 0 10px; }
 
 #chartContainer {
-  width: 90%;
-  max-width: 800px;
-  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  margin: 25px auto;
 }
+
+.chart-block {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  width: 95%;
+  max-width: 600px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chart-block h3 {
+  margin: 5px 0 10px;
+  font-size: 16px;
+  text-align: center;
+  color: #1976d2;
+}
+
+.chart-block canvas {
+  width: 100% !important;
+  height: 300px !important;
+}
+
 
 #yearlyChart {
   width: 100%;
