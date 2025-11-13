@@ -107,16 +107,33 @@ function renderTable(data) {
   });
 
   tableBody.innerHTML = '';
-  Object.entries(monthly).forEach(([month, val]) => {
-    const exp =
-      val.meal +
-      val.supplies +
-      val.play +
-      val.infra +
-      val.education +
-      val.others;
+  let total = {
+    income: 0,
+    meal: 0,
+    supplies: 0,
+    play: 0,
+    infra: 0,
+    education: 0,
+    others: 0,
+    expense: 0,
+    balance: 0
+  };
 
-    const balance = val.income - exp;
+  Object.entries(monthly).forEach(([month, val]) => {
+    const expense =
+      val.meal + val.supplies + val.play + val.infra + val.education + val.others;
+    const balance = val.income - expense;
+
+    // 累計
+    total.income += val.income;
+    total.meal += val.meal;
+    total.supplies += val.supplies;
+    total.play += val.play;
+    total.infra += val.infra;
+    total.education += val.education;
+    total.others += val.others;
+    total.expense += expense;
+    total.balance += balance;
 
     const row = document.createElement('tr');
     row.innerHTML = `
@@ -128,12 +145,51 @@ function renderTable(data) {
       <td>${formatNum(val.infra)}</td>
       <td>${formatNum(val.education)}</td>
       <td>${formatNum(val.others)}</td>
-      <td>${formatNum(exp)}</td>
+      <td>${formatNum(expense)}</td>
       <td class="${balance >= 0 ? 'positive' : 'negative'}">${formatNum(balance)}</td>
     `;
     tableBody.appendChild(row);
   });
+
+  // 平均値算出
+  const avg = {};
+  Object.keys(total).forEach((k) => (avg[k] = Math.round(total[k] / 12)));
+
+  // === 合計行 ===
+  const totalRow = document.createElement('tr');
+  totalRow.style.backgroundColor = '#fffde7';
+  totalRow.innerHTML = `
+    <th>合計</th>
+    <th>${formatNum(total.income)}</th>
+    <th>${formatNum(total.meal)}</th>
+    <th>${formatNum(total.supplies)}</th>
+    <th>${formatNum(total.play)}</th>
+    <th>${formatNum(total.infra)}</th>
+    <th>${formatNum(total.education)}</th>
+    <th>${formatNum(total.others)}</th>
+    <th>${formatNum(total.expense)}</th>
+    <th class="${total.balance >= 0 ? 'positive' : 'negative'}">${formatNum(total.balance)}</th>
+  `;
+  tableBody.appendChild(totalRow);
+
+  // === 平均行 ===
+  const avgRow = document.createElement('tr');
+  avgRow.style.backgroundColor = '#e3f2fd';
+  avgRow.innerHTML = `
+    <th>平均</th>
+    <th>${formatNum(avg.income)}</th>
+    <th>${formatNum(avg.meal)}</th>
+    <th>${formatNum(avg.supplies)}</th>
+    <th>${formatNum(avg.play)}</th>
+    <th>${formatNum(avg.infra)}</th>
+    <th>${formatNum(avg.education)}</th>
+    <th>${formatNum(avg.others)}</th>
+    <th>${formatNum(avg.expense)}</th>
+    <th class="${avg.balance >= 0 ? 'positive' : 'negative'}">${formatNum(avg.balance)}</th>
+  `;
+  tableBody.appendChild(avgRow);
 }
+
 
 // === 生活費合計表と同デザインの折れ線グラフ（収入＋支出 1グラフ） ===
 function renderChartOne(data, year) {
