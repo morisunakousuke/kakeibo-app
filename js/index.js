@@ -101,7 +101,7 @@ form.addEventListener('submit', async (e) => {
       msg.textContent = '更新しました。';
       window.editTarget = null;
     } else {
-      delete row.seq;
+      row.seq = await getNextSeq(row.date);
       await insertKakei(row);
       msg.textContent = '登録しました。';
     }

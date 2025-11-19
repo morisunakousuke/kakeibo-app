@@ -125,6 +125,8 @@ import {
        };
 
        // 合計計算（DBには送らない）
+       const totalValue = calcTotal(row);
+       row.seq = await getNextSeq(row.date);
        const { total, ...insertRow } = row;
 
        if (window.editTarget) {
